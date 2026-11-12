@@ -1,0 +1,27 @@
+.bar-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  padding-block: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.bar-top .who {
+  font-weight: 700;
+}
+
+.bar-top nav {
+  display: flex;
+  gap: 1.25rem;
+  color: var(--mute);
+}
+
+.bar-top nav a {
+  text-decoration: none;
+}
+
+.bar-top nav a:hover {
+  color: var(--paper);
+}

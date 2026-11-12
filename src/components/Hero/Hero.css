@@ -1,0 +1,600 @@
+/* Layout: wordmark + cycling pitch on the left, three 9:16 reel panels on the right.
+   One phrase, one panel and one progress bar are "on" at a time and advance together. */
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4rem);
+  padding-block: clamp(1.5rem, 5vw, 4.5rem) clamp(2.5rem, 6vw, 5rem);
+}
+
+@media (min-width: 900px) {
+  .hero {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
+
+/* light that follows the cursor */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: -4% -6%;
+  pointer-events: none;
+  background: radial-gradient(
+    520px circle at var(--mx, 72%) var(--my, 38%),
+    rgba(255, 90, 31, 0.17),
+    transparent 70%
+  );
+}
+
+.copy,
+.stage {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+/* ---------- wordmark ---------- */
+.wordmark {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 900;
+  font-size: clamp(3.4rem, 15vw, 6.5rem);
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 900px) {
+  .wordmark {
+    font-size: clamp(4.5rem, 9vw, 8.5rem);
+  }
+}
+
+.mask {
+  display: inline-block;
+  overflow: hidden;
+  padding-block: 0.07em;
+  margin-block: -0.07em;
+  vertical-align: top;
+  transform: translateY(calc(var(--p, 0) * -0.05em));
+  transition: transform 0.25s ease-out;
+}
+
+.ch {
+  display: inline-block;
+  color: color-mix(in srgb, var(--ember) calc(var(--p, 0) * 100%), var(--paper));
+  transition: color 0.25s ease-out;
+  animation: rise 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--j) * 0.045s + 0.05s);
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+/* ---------- cycling pitch ---------- */
+.pitch {
+  margin: 1.25rem 0 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.7rem, 3.8vw, 2.5rem);
+  line-height: 1.08;
+}
+
+.pitch .for {
+  display: block;
+}
+
+.swap {
+  display: grid;
+  padding-bottom: 0.3em;
+}
+
+.w {
+  grid-area: 1 / 1;
+  position: relative;
+  justify-self: start;
+  align-self: start;
+  opacity: 0;
+  transform: translateY(0.45em);
+  transition:
+    opacity 0.35s,
+    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.w.on {
+  opacity: 1;
+  transform: none;
+}
+
+.w::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.12em;
+  width: 100%;
+  height: 3px;
+  background: var(--ember);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.w.on::after {
+  animation: dwell var(--dwell) linear forwards;
+}
+
+@keyframes dwell {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.lead {
+  margin: 0.75rem 0 0;
+  color: var(--mute);
+  max-width: 38ch;
+}
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.85rem 1.35rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  transform: translate(var(--bx, 0px), var(--by, 0px));
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.btn.primary {
+  background: var(--ember);
+  color: var(--ink);
+  border-color: var(--ember);
+}
+
+.btn.primary:hover {
+  background: #ff7440;
+  border-color: #ff7440;
+}
+
+.btn.ghost:hover {
+  border-color: var(--paper);
+}
+
+/* ---------- reels ---------- */
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--mute);
+}
+
+.reels {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.5rem, 1.4vw, 1rem);
+  padding: 0.75rem 0.4rem 0.25rem;
+  perspective: 1400px;
+}
+
+.reel {
+  --k: 1;
+  appearance: none;
+  display: block;
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 200px;
+  aspect-ratio: 9 / 16;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: visible;
+  perspective: 900px;
+  -webkit-tap-highlight-color: transparent;
+  transform: translateY(var(--ty, 0px)) scale(var(--sc, 1))
+    rotateY(calc(var(--nx, 0) * var(--k) * 9deg)) rotateX(calc(var(--ny, 0) * var(--k) * -6deg));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.reel:nth-child(1) {
+  --k: 1;
+}
+
+.reel:nth-child(2) {
+  --k: 1.5;
+  margin-top: clamp(1.25rem, 4vw, 2.75rem);
+}
+
+.reel:nth-child(3) {
+  --k: 0.8;
+  margin-top: clamp(0.25rem, 1.2vw, 0.75rem);
+}
+
+.reel.on {
+  --sc: 1.07;
+  --ty: -8px;
+  z-index: 2;
+}
+
+/* dims the reels that are not on */
+.reel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: var(--ink);
+  opacity: 0.4;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.reel.on::after {
+  opacity: 0;
+}
+
+.fold {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  transform-style: preserve-3d;
+}
+
+.half {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: 0 30px 50px -28px rgba(0, 0, 0, 0.9);
+  transition: box-shadow 0.4s;
+}
+
+.reel.on .half {
+  box-shadow:
+    0 0 0 1px rgba(255, 90, 31, 0.6),
+    0 34px 60px -24px rgba(255, 90, 31, 0.5);
+}
+
+.half.l {
+  border-radius: 10px 0 0 10px;
+}
+
+.half.r {
+  border-radius: 0 10px 10px 0;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  animation: unfold 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 0.2s + 0.3s);
+}
+
+/* crease shading */
+.half::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14%;
+  pointer-events: none;
+}
+
+.half.l::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.35), transparent);
+}
+
+.half.r::after {
+  left: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent);
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  z-index: 3;
+  animation: shade 1.25s ease-out both;
+  animation-delay: calc(var(--i) * 0.2s + 0.3s);
+}
+
+@keyframes unfold {
+  from {
+    transform: rotateY(-172deg);
+  }
+  to {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes shade {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---------- scenes ----------
+   Each scene is drawn at full reel width in both halves, offset so they line up. */
+.s {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 200%;
+  container-type: inline-size;
+  overflow: hidden;
+  --fg: var(--paper);
+}
+
+.l .s {
+  left: 0;
+}
+
+.r .s {
+  left: -100%;
+}
+
+.ui {
+  position: absolute;
+  left: 6cqw;
+  right: 6cqw;
+  display: flex;
+  color: var(--fg);
+  z-index: 2;
+}
+
+.ui.top {
+  top: 5cqw;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: max(7px, 5cqw);
+  font-variant-numeric: tabular-nums;
+}
+
+.ui.bottom {
+  bottom: 6cqw;
+  flex-direction: column;
+  gap: 1.5cqw;
+}
+
+.ui.bottom b {
+  font-size: max(9px, 7cqw);
+  line-height: 1.1;
+}
+
+.ui.bottom span {
+  font-size: max(7px, 5cqw);
+  opacity: 0.72;
+}
+
+.rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.6cqw;
+}
+
+.rec i {
+  width: 3cqw;
+  height: 3cqw;
+  border-radius: 50%;
+  background: var(--ember);
+  animation: blink 1s steps(2, jump-none) infinite;
+}
+
+.s3 .rec i {
+  background: var(--ember-deep);
+}
+
+.track {
+  height: max(2px, 0.9cqw);
+  background: color-mix(in srgb, var(--fg) 25%, transparent);
+  margin-top: 2cqw;
+}
+
+.track em {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--fg);
+}
+
+.reel.on .track em {
+  animation: prog var(--dwell) linear forwards;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes prog {
+  to {
+    width: 100%;
+  }
+}
+
+/* only the reel that is on moves; the others hold their frame */
+.reel:not(.on) .streak,
+.reel:not(.on) .s2::before,
+.reel:not(.on) .rec i {
+  animation-play-state: paused;
+}
+
+/* scene: bike and car */
+.s1 {
+  background: linear-gradient(180deg, #1c1714 0%, #0b0a09 100%);
+}
+
+.s1 .sun {
+  position: absolute;
+  left: 50%;
+  bottom: 26%;
+  width: 82cqw;
+  aspect-ratio: 1;
+  transform: translate(-50%, 28%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffa04d 0%, #ff5a1f 32%, rgba(255, 90, 31, 0) 68%);
+}
+
+.s1 .road {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26%;
+  background: linear-gradient(#0b0a09, #1f1a17);
+  border-top: 1px solid rgba(255, 138, 61, 0.55);
+}
+
+.streak {
+  position: absolute;
+  left: 0;
+  top: var(--y);
+  width: var(--l);
+  height: max(1px, 0.7cqw);
+  background: linear-gradient(90deg, transparent, #ffb27a);
+  opacity: 0.8;
+  animation: streak var(--d) linear infinite;
+  animation-delay: var(--delay);
+}
+
+@keyframes streak {
+  from {
+    transform: translateX(-40cqw);
+  }
+  to {
+    transform: translateX(150cqw);
+  }
+}
+
+/* scene: shop opening */
+.s2 {
+  background: linear-gradient(165deg, #ff6a2c 0%, #c9360a 100%);
+  --fg: #0e0d0c;
+}
+
+.s2::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.12) 0 6cqw,
+    transparent 6cqw 12cqw
+  );
+  animation: slide 3s linear infinite;
+}
+
+.s2 .big {
+  position: absolute;
+  left: 6cqw;
+  top: 26%;
+  font-family: var(--f-display);
+  font-weight: 900;
+  font-size: 36cqw;
+  line-height: 0.82;
+  color: #0e0d0c;
+  transform: rotate(-5deg);
+  transform-origin: left top;
+}
+
+@keyframes slide {
+  to {
+    background-position: 17cqw 17cqw;
+  }
+}
+
+/* scene: offer */
+.s3 {
+  background: #efe8de;
+  --fg: #0e0d0c;
+}
+
+.s3 .big {
+  position: absolute;
+  left: 6cqw;
+  top: 22%;
+  font-family: var(--f-display);
+  font-weight: 900;
+  font-size: 30cqw;
+  line-height: 0.84;
+  color: #0e0d0c;
+}
+
+.s3 .tag {
+  position: absolute;
+  left: 6cqw;
+  top: 66%;
+  padding: 2cqw 3.5cqw;
+  background: var(--ember);
+  color: #0e0d0c;
+  font-weight: 700;
+  font-size: max(7px, 5.2cqw);
+  transform: rotate(-3deg);
+}
+
+/* hover or focus on a reel holds the cycle */
+.paused .w.on::after,
+.paused .reel.on .track em {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .half.r,
+  .shade,
+  .streak,
+  .s2::before,
+  .rec i,
+  .ch {
+    animation: none !important;
+  }
+
+  .shade {
+    opacity: 0;
+  }
+
+  .w.on::after {
+    animation: none;
+    transform: scaleX(1);
+  }
+
+  .reel.on .track em {
+    animation: none;
+    width: 62%;
+  }
+
+  .reel,
+  .mask,
+  .btn {
+    transition: none;
+  }
+}

@@ -1,0 +1,92 @@
+import { useRef } from 'react'
+import { useCycle } from '../../hooks/useCycle'
+import { usePointerFx } from '../../hooks/usePointerFx'
+import MagnetLink from './MagnetLink'
+import Reel from './Reel'
+import Wordmark from './Wordmark'
+import { REELS } from './reels'
+import './Hero.css'
+
+const INSTAGRAM = 'https://www.instagram.com/framesnfold'
+
+export default function Hero() {
+  const heroRef = useRef<HTMLElement>(null)
+  const reelsRef = useRef<HTMLDivElement>(null)
+  const { current, select, next, paused, setHovering, setFocusing } = useCycle(REELS.length)
+
+  usePointerFx(heroRef, reelsRef)
+
+  return (
+    <main ref={heroRef} className={paused ? 'hero paused' : 'hero'}>
+      <div className="copy">
+        <Wordmark text="framesnfold" />
+
+        <p className="pitch">
+          <span className="sr">
+            Reels for bike and car pages, shop openings and weekend offers.
+          </span>
+          <span className="for" aria-hidden="true">
+            Reels for
+          </span>
+          {/* The progress underline finishes, then the next phrase comes on. */}
+          <span
+            className="swap"
+            aria-hidden="true"
+            onAnimationEnd={(e) => {
+              if (
+                e.animationName === 'dwell' &&
+                (e.target as HTMLElement).classList.contains('on')
+              ) {
+                next()
+              }
+            }}
+          >
+            {REELS.map((reel, i) => (
+              <span key={reel.id} className={i === current ? 'w on' : 'w'}>
+                {reel.phrase}
+              </span>
+            ))}
+          </span>
+        </p>
+
+        <p className="lead">
+          Edits for bike and car pages, shop openings and offer announcements. Shot and cut by
+          Nawaz Kumanali.
+        </p>
+
+        <div className="cta">
+          <MagnetLink variant="primary" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
+            Watch the reels
+          </MagnetLink>
+          <MagnetLink variant="ghost" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
+            Book a reel on Instagram
+          </MagnetLink>
+        </div>
+      </div>
+
+      <div className="stage">
+        <div
+          ref={reelsRef}
+          className="reels"
+          onPointerEnter={(e) => {
+            if (e.pointerType === 'mouse') setHovering(true)
+          }}
+          onPointerLeave={() => setHovering(false)}
+        >
+          {REELS.map((reel, i) => (
+            <Reel
+              key={reel.id}
+              reel={reel}
+              index={i}
+              active={i === current}
+              paused={paused}
+              onSelect={select}
+              onFocusChange={setFocusing}
+            />
+          ))}
+        </div>
+        <p className="hint">Hover or tap a panel to switch reels.</p>
+      </div>
+    </main>
+  )
+}
