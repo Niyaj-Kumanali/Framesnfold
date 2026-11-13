@@ -2,8 +2,9 @@ import type { CSSVars } from '../../types'
 
 /*
  * Placeholder scenes for the three reel panels. Each scene is drawn at the
- * full width of a reel; the Reel component renders it twice (left and right
- * half) so the panel can fold down the middle.
+ * full width of a reel. Reel.tsx renders it three times: once as the single
+ * continuous scene that stays on screen, and once per half for the fold
+ * intro (two halves alone leave a hairline at the join).
  */
 
 function Timecode() {

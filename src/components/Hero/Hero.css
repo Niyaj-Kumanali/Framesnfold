@@ -310,6 +310,9 @@
   overflow: visible;
   perspective: 900px;
   border-radius: 10px;
+  /* One shadow for the whole panel: per-half shadows meet at the join and
+     read as a seam. */
+  box-shadow: 0 30px 50px -28px rgba(0, 0, 0, 0.9);
   -webkit-tap-highlight-color: transparent;
   /* The deck is flat on purpose: a preserve-3d parent makes the browser
      sort these cards by 3D depth and ignore z-index, which put the active
@@ -381,11 +384,35 @@
   opacity: 1;
 }
 
+/* Single continuous scene. It sits above the folded halves and fades in once
+   the fold has opened, so the panel is painted as one layer from then on. */
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: 10px;
+  opacity: 0;
+  animation: scene-on 1ms linear 2s forwards;
+}
+
+.scene .s {
+  width: 100%;
+  left: 0;
+}
+
 .fold {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   transform-style: preserve-3d;
+}
+
+@keyframes scene-on {
+  to {
+    opacity: 1;
+  }
 }
 
 .half {
@@ -393,7 +420,6 @@
   width: 50%;
   height: 100%;
   overflow: hidden;
-  box-shadow: 0 30px 50px -28px rgba(0, 0, 0, 0.9);
 }
 
 .half.l {
@@ -405,7 +431,11 @@
   transform-origin: left center;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  animation: unfold 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* `backwards`, not `both`: it holds the folded frame during the delay, then
+     drops the transform when it finishes. A permanent rotateY(0) keeps this
+     half on its own 3D layer, which rasterises differently from the flat left
+     half and shows up as a division at the join. */
+  animation: unfold 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
   animation-delay: calc(var(--i) * 0.2s + 0.3s);
 }
 
@@ -888,6 +918,16 @@
 
   .shade {
     opacity: 0;
+  }
+
+  /* no fold: show the single scene straight away */
+  .scene {
+    opacity: 1;
+    animation: none;
+  }
+
+  .fold {
+    display: none;
   }
 
   .w.on::after {

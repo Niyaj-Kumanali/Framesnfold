@@ -50,7 +50,7 @@ src/hooks/useReducedMotion.ts
 src/components/Header/         Header.tsx, Header.css (entrance + compact mobile)
 src/components/Hero/
   Hero.tsx, Hero.css           layout, cycle wiring, deck, all hero styles
-  Reel.tsx                     one folding panel (two halves share one scene)
+  Reel.tsx                     one folding panel (single scene layer + fold halves)
   scenes.tsx                   3 placeholder scenes drawn in CSS ("Sample frame")
   reels.tsx                    REELS array, order = cycle order
   Wordmark.tsx                 letter rise + cursor proximity

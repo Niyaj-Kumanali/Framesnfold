@@ -56,6 +56,12 @@ export default function Reel({
       }}
       onBlur={() => onFocusChange(false)}
     >
+      {/* One continuous scene. The two folded halves above it are only for the
+          intro; two halves rasterise separately and leave a hairline at the
+          join, so this layer takes over once the fold has finished. */}
+      <div className="scene">
+        <Scene />
+      </div>
       <div className="fold">
         <div className="half l">
           <Scene />
