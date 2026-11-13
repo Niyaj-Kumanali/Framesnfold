@@ -409,26 +409,6 @@
   animation-delay: calc(var(--i) * 0.2s + 0.3s);
 }
 
-/* crease shading */
-.half::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 14%;
-  pointer-events: none;
-}
-
-.half.l::after {
-  right: 0;
-  background: linear-gradient(270deg, rgba(0, 0, 0, 0.35), transparent);
-}
-
-.half.r::after {
-  left: 0;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent);
-}
-
 .shade {
   position: absolute;
   inset: 0;
