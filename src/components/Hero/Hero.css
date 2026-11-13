@@ -1,30 +1,27 @@
-/* Layout: wordmark + cycling pitch on the left, three 9:16 reel panels on the right.
-   One phrase, one panel and one progress bar are "on" at a time and advance together. */
+/* Hero: one viewport. Copy on the left, a fanned deck of 9:16 reels on the right.
+   The deck is absolute-positioned so the active panel can come forward without
+   moving its neighbours' hit targets. */
 
 .hero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
   align-items: center;
-  gap: clamp(2rem, 5vw, 4rem);
-  padding-block: clamp(1.5rem, 5vw, 4.5rem) clamp(2.5rem, 6vw, 5rem);
-}
-
-@media (min-width: 900px) {
-  .hero {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  }
+  gap: clamp(1.5rem, 4vw, 4rem);
+  min-height: 0;
+  padding-block: clamp(0.5rem, 2.4vh, 2.5rem);
 }
 
 /* light that follows the cursor */
 .hero::before {
   content: '';
   position: absolute;
-  inset: -4% -6%;
+  inset: 0;
   pointer-events: none;
+  z-index: 0;
   background: radial-gradient(
-    520px circle at var(--mx, 72%) var(--my, 38%),
-    rgba(255, 90, 31, 0.17),
+    560px circle at var(--mx, 68%) var(--my, 42%),
+    rgba(255, 90, 31, 0.16),
     transparent 70%
   );
 }
@@ -36,20 +33,68 @@
   min-width: 0;
 }
 
+.copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ---------- entrance ---------- */
+.copy > * {
+  animation: copy-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.stage,
+.hint {
+  animation: fade-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.wordmark {
+  animation-delay: 0.02s;
+}
+
+.pitch {
+  animation-delay: 0.16s;
+}
+
+.lead {
+  animation-delay: 0.26s;
+}
+
+.cta {
+  animation-delay: 0.36s;
+}
+
+.stage {
+  animation-delay: 0.14s;
+  animation-duration: 1s;
+}
+
+.hint {
+  animation-delay: 0.46s;
+}
+
+@keyframes copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
 /* ---------- wordmark ---------- */
 .wordmark {
   margin: 0;
   font-family: var(--f-display);
   font-weight: 900;
-  font-size: clamp(3.4rem, 15vw, 6.5rem);
+  font-size: clamp(3.3rem, 8vw, 8rem);
   line-height: 0.86;
   letter-spacing: -0.01em;
-}
-
-@media (min-width: 900px) {
-  .wordmark {
-    font-size: clamp(4.5rem, 9vw, 8.5rem);
-  }
 }
 
 .mask {
@@ -78,10 +123,10 @@
 
 /* ---------- cycling pitch ---------- */
 .pitch {
-  margin: 1.25rem 0 0;
+  margin: clamp(0.75rem, 2vh, 1.4rem) 0 0;
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: clamp(1.7rem, 3.8vw, 2.5rem);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
   line-height: 1.08;
 }
 
@@ -134,7 +179,7 @@
 }
 
 .lead {
-  margin: 0.75rem 0 0;
+  margin: clamp(0.5rem, 1.4vh, 0.9rem) 0 0;
   color: var(--mute);
   max-width: 38ch;
 }
@@ -143,11 +188,14 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1.75rem;
+  margin-top: clamp(1rem, 2.6vh, 1.9rem);
 }
 
+/* ---------- buttons ---------- */
 .btn {
+  position: relative;
   display: inline-block;
+  overflow: hidden;
   padding: 0.85rem 1.35rem;
   border-radius: 6px;
   font-weight: 700;
@@ -159,6 +207,31 @@
     transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
     background-color 0.15s,
     border-color 0.15s;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.22), transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.5s ease-out;
+  pointer-events: none;
+}
+
+.btn:hover::before {
+  transform: translateX(120%);
+}
+
+.btn::after {
+  content: '↗';
+  display: inline-block;
+  margin-left: 0.5em;
+  transition: transform 0.25s ease-out;
+}
+
+.btn:hover::after {
+  transform: translate(2px, -2px);
 }
 
 .btn.primary {
@@ -176,35 +249,57 @@
   border-color: var(--paper);
 }
 
-/* ---------- reels ---------- */
+/* ---------- stage + deck ---------- */
 .stage {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  justify-content: center;
+  gap: clamp(0.4rem, 1.2vh, 0.9rem);
+  align-self: stretch;
+  min-height: 0;
+}
+
+.deck {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  perspective: 1600px;
+  transform-style: preserve-3d;
+  touch-action: pan-y;
 }
 
 .hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--mute);
 }
 
-.reels {
-  display: flex;
-  align-items: flex-start;
-  gap: clamp(0.5rem, 1.4vw, 1rem);
-  padding: 0.75rem 0.4rem 0.25rem;
-  perspective: 1400px;
+.keys {
+  display: inline-flex;
+  gap: 0.12rem;
+  padding: 0.08rem 0.34rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--paper);
 }
 
+/* ---------- one folding reel ---------- */
 .reel {
-  --k: 1;
+  --fan: clamp(38px, 6vw, 92px);
+  --lift: clamp(10px, 1.8vh, 22px);
+  --s: calc(1 - var(--d, 0) * 0.075);
   appearance: none;
-  display: block;
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: min(100%, 66svh);
   aspect-ratio: 9 / 16;
   padding: 0;
   border: 0;
@@ -215,30 +310,28 @@
   cursor: pointer;
   overflow: visible;
   perspective: 900px;
+  transform-style: preserve-3d;
   -webkit-tap-highlight-color: transparent;
-  transform: translateY(var(--ty, 0px)) scale(var(--sc, 1))
-    rotateY(calc(var(--nx, 0) * var(--k) * 9deg)) rotateX(calc(var(--ny, 0) * var(--k) * -6deg));
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translate(-50%, -50%)
+    translate3d(calc(var(--o, 0) * var(--fan)), calc(var(--d, 0) * var(--lift)), 0)
+    rotate(calc(var(--o, 0) * 2deg))
+    rotateY(calc(var(--o, 0) * -8deg + var(--nx, 0) * 4deg))
+    rotateX(calc(var(--ny, 0) * -3deg))
+    scale(var(--s));
+  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: var(--z, 1);
 }
 
-.reel:nth-child(1) {
-  --k: 1;
-}
-
-.reel:nth-child(2) {
-  --k: 1.5;
-  margin-top: clamp(1.25rem, 4vw, 2.75rem);
-}
-
-.reel:nth-child(3) {
-  --k: 0.8;
-  margin-top: clamp(0.25rem, 1.2vw, 0.75rem);
+.reel:hover {
+  --s: calc(1 - var(--d, 0) * 0.075 + 0.02);
 }
 
 .reel.on {
-  --sc: 1.07;
-  --ty: -8px;
-  z-index: 2;
+  --s: 1.05;
+}
+
+.reel.on:hover {
+  --s: 1.06;
 }
 
 /* dims the reels that are not on */
@@ -248,7 +341,7 @@
   inset: 0;
   border-radius: 10px;
   background: var(--ink);
-  opacity: 0.4;
+  opacity: 0.55;
   transition: opacity 0.4s;
   pointer-events: none;
   z-index: 4;
@@ -256,6 +349,27 @@
 
 .reel.on::after {
   opacity: 0;
+}
+
+/* cursor glare on the active panel */
+.reel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: radial-gradient(
+    220px circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(255, 255, 255, 0.09),
+    transparent 66%
+  );
+  opacity: 0;
+  transition: opacity 0.35s;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.reel.on::before {
+  opacity: 1;
 }
 
 .fold {
@@ -351,6 +465,15 @@
   container-type: inline-size;
   overflow: hidden;
   --fg: var(--paper);
+}
+
+.s::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 44%, transparent 54%, rgba(0, 0, 0, 0.42) 100%);
 }
 
 .l .s {
@@ -475,6 +598,23 @@
   border-top: 1px solid rgba(255, 138, 61, 0.55);
 }
 
+.s1 .road::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 178, 122, 0.9), transparent);
+}
+
+@keyframes road-glow {
+  50% {
+    opacity: 0.25;
+    transform: scaleX(0.7);
+  }
+}
+
 .streak {
   position: absolute;
   left: 0;
@@ -562,19 +702,206 @@
   transform: rotate(-3deg);
 }
 
-/* hover or focus on a reel holds the cycle */
+/* ---------- scene motion, only while on ---------- */
+.reel.on .s1 .sun {
+  animation: sun-breathe calc(var(--dwell) * 1.5) ease-in-out both;
+}
+
+.reel.on .s1 .road::after {
+  animation: road-glow 2.2s ease-in-out infinite;
+}
+
+.reel.on .s2 .big {
+  animation: stamp 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.reel.on .s3 .big {
+  animation: text-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.reel.on .s3 .tag {
+  animation: tag-in 0.8s 0.08s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.reel.on .ui {
+  animation: hud-in 0.7s 0.15s ease-out both;
+}
+
+@keyframes sun-breathe {
+  from {
+    transform: translate(-50%, 32%) scale(0.94);
+    opacity: 0.8;
+  }
+  to {
+    transform: translate(-50%, 24%) scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-8deg) translateY(14%) scale(0.9);
+  }
+}
+
+@keyframes text-up {
+  from {
+    opacity: 0;
+    transform: translateY(12%);
+  }
+}
+
+@keyframes tag-in {
+  from {
+    opacity: 0;
+    transform: rotate(-10deg) scale(0.9);
+  }
+}
+
+@keyframes hud-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* hover or focus on the deck holds the cycle */
 .paused .w.on::after,
 .paused .reel.on .track em {
   animation-play-state: paused;
 }
 
+/* ---------- responsive ---------- */
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: clamp(0.8rem, 2vh, 1.3rem);
+    padding-block: 0.25rem max(0.5rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .copy {
+    justify-content: flex-start;
+  }
+
+  .wordmark {
+    font-size: clamp(3.1rem, 13vw, 5.4rem);
+  }
+
+  .pitch {
+    margin-top: clamp(0.6rem, 1.4vh, 1rem);
+  }
+
+  .lead {
+    max-width: 46ch;
+  }
+
+  .cta {
+    margin-top: clamp(0.8rem, 2vh, 1.3rem);
+  }
+
+  .reel {
+    --fan: clamp(40px, 10vw, 56px);
+    --lift: 10px;
+    height: min(100%, 52svh);
+  }
+
+  .reel.on {
+    --s: 1.04;
+  }
+
+  .reel.on:hover {
+    --s: 1.05;
+  }
+
+  .hint {
+    justify-content: flex-start;
+  }
+}
+
+@media (hover: none) {
+  .keys {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) and (max-height: 700px) {
+  .lead {
+    display: none;
+  }
+
+  .reel {
+    height: min(100%, 48svh);
+  }
+
+  .wordmark {
+    font-size: clamp(2.9rem, 11.5vw, 4.4rem);
+  }
+
+  .pitch {
+    margin-top: 0.55rem;
+    font-size: clamp(1.45rem, 5.4vw, 2.1rem);
+  }
+
+  .cta {
+    margin-top: 0.8rem;
+  }
+}
+
+@media (max-height: 500px) {
+  .lead {
+    display: none;
+  }
+
+  .wordmark {
+    font-size: clamp(2.8rem, 7vw, 4.4rem);
+  }
+
+  .pitch {
+    margin-top: 0.5rem;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+  }
+
+  .cta {
+    margin-top: 0.7rem;
+  }
+}
+
+@media (max-width: 760px) and (max-height: 600px) {
+  .lead {
+    display: none;
+  }
+
+  .reel {
+    height: min(100%, 46svh);
+  }
+
+  .wordmark {
+    font-size: clamp(2.8rem, 11vw, 4.2rem);
+  }
+
+  .pitch {
+    font-size: clamp(1.4rem, 5.2vw, 2rem);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .copy > *,
+  .stage,
+  .hint,
   .half.r,
   .shade,
   .streak,
   .s2::before,
   .rec i,
-  .ch {
+  .ch,
+  .reel.on .s1 .sun,
+  .reel.on .s1 .road::after,
+  .reel.on .s2 .big,
+  .reel.on .s3 .big,
+  .reel.on .s3 .tag,
+  .reel.on .ui {
     animation: none !important;
   }
 
@@ -594,7 +921,15 @@
 
   .reel,
   .mask,
-  .btn {
+  .btn,
+  .w {
+    transition: none;
+  }
+
+  .btn::before,
+  .btn::after,
+  .reel::before,
+  .reel::after {
     transition: none;
   }
 }

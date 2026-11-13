@@ -6,7 +6,8 @@ const clamp = (v: number) => Math.max(-1, Math.min(1, v))
 /**
  * Mouse-only effects, written as CSS variables so React never re-renders:
  *  - hero:  --mx / --my  (cursor position, drives the orange light)
- *  - reels: --nx / --ny  (-1..1, drives the panel tilt)
+ *  - deck:  --nx / --ny  (-1..1, drives the panel tilt)
+ *           --gx / --gy  (percentage, drives the glare on the active panel)
  */
 export function usePointerFx(
   heroRef: RefObject<HTMLElement | null>,
@@ -37,6 +38,8 @@ export function usePointerFx(
         '--ny',
         clamp((py - (r.top + r.height / 2)) / (h.height / 2)).toFixed(3),
       )
+      reels.style.setProperty('--gx', `${(((px - r.left) / r.width) * 100).toFixed(2)}%`)
+      reels.style.setProperty('--gy', `${(((py - r.top) / r.height) * 100).toFixed(2)}%`)
     }
 
     const onMove = (e: PointerEvent) => {
@@ -50,6 +53,8 @@ export function usePointerFx(
       if (e.pointerType !== 'mouse') return
       reels.style.setProperty('--nx', '0')
       reels.style.setProperty('--ny', '0')
+      reels.style.setProperty('--gx', '50%')
+      reels.style.setProperty('--gy', '50%')
     }
 
     hero.addEventListener('pointermove', onMove)

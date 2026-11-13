@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { useCycle } from '../../hooks/useCycle'
 import { usePointerFx } from '../../hooks/usePointerFx'
+import { useReelNav } from '../../hooks/useReelNav'
 import MagnetLink from './MagnetLink'
 import Reel from './Reel'
 import Wordmark from './Wordmark'
@@ -11,10 +12,11 @@ const INSTAGRAM = 'https://www.instagram.com/framesnfold'
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null)
-  const reelsRef = useRef<HTMLDivElement>(null)
-  const { current, select, next, paused, setHovering, setFocusing } = useCycle(REELS.length)
+  const deckRef = useRef<HTMLDivElement>(null)
+  const { current, select, next, prev, paused, setHovering, setFocusing } = useCycle(REELS.length)
+  const swipe = useReelNav(heroRef, next, prev)
 
-  usePointerFx(heroRef, reelsRef)
+  usePointerFx(heroRef, deckRef)
 
   return (
     <main ref={heroRef} className={paused ? 'hero paused' : 'hero'}>
@@ -66,26 +68,35 @@ export default function Hero() {
 
       <div className="stage">
         <div
-          ref={reelsRef}
-          className="reels"
+          ref={deckRef}
+          className="deck"
+          role="group"
+          aria-label="Sample reels"
           onPointerEnter={(e) => {
             if (e.pointerType === 'mouse') setHovering(true)
           }}
           onPointerLeave={() => setHovering(false)}
+          {...swipe}
         >
           {REELS.map((reel, i) => (
             <Reel
               key={reel.id}
               reel={reel}
               index={i}
-              active={i === current}
+              current={current}
+              count={REELS.length}
               paused={paused}
               onSelect={select}
               onFocusChange={setFocusing}
             />
           ))}
         </div>
-        <p className="hint">Hover or tap a panel to switch reels.</p>
+        <p className="hint">
+          <span className="keys" aria-hidden="true">
+            ← →
+          </span>
+          <span>Swipe, scroll or tap a panel</span>
+        </p>
       </div>
     </main>
   )

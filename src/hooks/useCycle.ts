@@ -11,11 +11,13 @@ export function useCycle(count: number) {
   const [focusing, setFocusing] = useState(false)
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % count), [count])
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + count) % count), [count])
 
   return {
     current,
     select: setCurrent,
     next,
+    prev,
     paused: hovering || focusing,
     setHovering,
     setFocusing,
