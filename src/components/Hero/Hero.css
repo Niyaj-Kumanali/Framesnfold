@@ -384,8 +384,9 @@
   opacity: 1;
 }
 
-/* Single continuous scene. It sits above the folded halves and fades in once
-   the fold has opened, so the panel is painted as one layer from then on. */
+/* Single continuous scene. It sits above the folded halves and fades in as
+   soon as that panel's fold has opened, so from then on the panel is painted
+   as one layer. The delay matches the unfold delay + duration. */
 .scene {
   position: absolute;
   inset: 0;
@@ -393,7 +394,7 @@
   overflow: hidden;
   border-radius: 10px;
   opacity: 0;
-  animation: scene-on 1ms linear 2s forwards;
+  animation: scene-on 1ms linear calc(var(--i, 0) * 0.2s + 1.6s) forwards;
 }
 
 .scene .s {
