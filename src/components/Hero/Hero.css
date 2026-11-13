@@ -309,6 +309,7 @@
   cursor: pointer;
   overflow: visible;
   perspective: 900px;
+  border-radius: 10px;
   -webkit-tap-highlight-color: transparent;
   /* The deck is flat on purpose: a preserve-3d parent makes the browser
      sort these cards by 3D depth and ignore z-index, which put the active
@@ -320,7 +321,9 @@
     rotateY(calc(var(--o, 0) * -8deg + var(--nx, 0) * 4deg))
     rotateX(calc(var(--ny, 0) * -3deg))
     scale(var(--s));
-  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition:
+    transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.4s;
   z-index: var(--z, 1);
 }
 
@@ -330,6 +333,10 @@
 
 .reel.on {
   --s: 1.05;
+  /* One ring for the whole panel. A ring per half paints a line down the crease. */
+  box-shadow:
+    0 0 0 1px rgba(255, 90, 31, 0.6),
+    0 34px 60px -24px rgba(255, 90, 31, 0.5);
 }
 
 .reel.on:hover {
@@ -387,13 +394,6 @@
   height: 100%;
   overflow: hidden;
   box-shadow: 0 30px 50px -28px rgba(0, 0, 0, 0.9);
-  transition: box-shadow 0.4s;
-}
-
-.reel.on .half {
-  box-shadow:
-    0 0 0 1px rgba(255, 90, 31, 0.6),
-    0 34px 60px -24px rgba(255, 90, 31, 0.5);
 }
 
 .half.l {
