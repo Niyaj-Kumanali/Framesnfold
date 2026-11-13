@@ -265,7 +265,6 @@
   width: 100%;
   min-height: 0;
   perspective: 1600px;
-  transform-style: preserve-3d;
   touch-action: pan-y;
 }
 
@@ -292,7 +291,7 @@
 
 /* ---------- one folding reel ---------- */
 .reel {
-  --fan: clamp(38px, 6vw, 92px);
+  --fan: 26%;
   --lift: clamp(10px, 1.8vh, 22px);
   --s: calc(1 - var(--d, 0) * 0.075);
   appearance: none;
@@ -310,8 +309,11 @@
   cursor: pointer;
   overflow: visible;
   perspective: 900px;
-  transform-style: preserve-3d;
   -webkit-tap-highlight-color: transparent;
+  /* The deck is flat on purpose: a preserve-3d parent makes the browser
+     sort these cards by 3D depth and ignore z-index, which put the active
+     panel behind its neighbours. Flat deck + z-index keeps the fan correct;
+     perspective still gives the rotateY tilt and the fold their depth. */
   transform: translate(-50%, -50%)
     translate3d(calc(var(--o, 0) * var(--fan)), calc(var(--d, 0) * var(--lift)), 0)
     rotate(calc(var(--o, 0) * 2deg))
@@ -802,7 +804,6 @@
   }
 
   .reel {
-    --fan: clamp(40px, 10vw, 56px);
     --lift: 10px;
     height: min(100%, 52svh);
   }
