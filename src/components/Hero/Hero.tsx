@@ -95,7 +95,7 @@ export default function Hero() {
           <span className="keys" aria-hidden="true">
             ← →
           </span>
-          <span>Swipe, scroll or tap a panel</span>
+          <span>Swipe sideways or tap a panel</span>
         </p>
       </div>
     </main>

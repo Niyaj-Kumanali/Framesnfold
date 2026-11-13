@@ -6,10 +6,12 @@ const SWIPE = 46
 
 /**
  * Non-mouse navigation for the reel deck:
- *  - wheel / trackpad scroll steps through reels (only when the page itself
- *    cannot scroll, so a short viewport never traps the user)
- *  - ArrowLeft/ArrowRight (and Up/Down) step through reels
+ *  - horizontal wheel / trackpad scroll steps through reels
+ *  - ArrowLeft/ArrowRight step through reels
  *  - horizontal drag or swipe on the deck steps through reels
+ *
+ * Vertical intent is always left alone, so the page can scroll to the next
+ * section later. Nothing here calls preventDefault.
  */
 export function useReelNav(
   heroRef: RefObject<HTMLElement | null>,
@@ -28,11 +30,20 @@ export function useReelNav(
 
     const onWheel = (e: WheelEvent) => {
       if (e.ctrlKey || e.metaKey) return
-      const pageScrolls = document.documentElement.scrollHeight > window.innerHeight + 2
-      if (!pageScrolls) e.preventDefault()
+
+      /* Only a clearly horizontal gesture belongs to the deck. Anything else
+         is page scroll, which this hook never touches. */
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) * 1.2) {
+        acc = 0
+        return
+      }
       if (locked) return
 
-      acc += Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX
+      /* A change of direction starts a fresh gesture rather than cancelling
+         out the distance already travelled. */
+      if (acc !== 0 && Math.sign(e.deltaX) !== Math.sign(acc)) acc = 0
+
+      acc += e.deltaX
       if (Math.abs(acc) < 36) return
 
       if (acc > 0) next()
@@ -52,16 +63,16 @@ export function useReelNav(
         return
       }
 
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      if (e.key === 'ArrowRight') {
         e.preventDefault()
         next()
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      } else if (e.key === 'ArrowLeft') {
         e.preventDefault()
         prev()
       }
     }
 
-    hero.addEventListener('wheel', onWheel, { passive: false })
+    hero.addEventListener('wheel', onWheel, { passive: true })
     window.addEventListener('keydown', onKey)
     return () => {
       hero.removeEventListener('wheel', onWheel)

@@ -28,8 +28,8 @@
 
 ## Behaviour (implemented)
 - One phrase, one panel and one progress bar are "on" at a time. The ember underline under the phrase runs for `--dwell`, and its `animationend` (name `dwell`) advances to the next reel. Pausing is done in CSS (`.paused` freezes the bar and the panel progress).
-- Selecting a reel: click/tap a panel, focus it, `←`/`→` (also `↑`/`↓`), wheel/trackpad, or a horizontal swipe on the deck. Hover only pauses/previews; it does not select, so panels never re-fan under the cursor. `useReelNav` owns wheel, keys and swipe.
-- Panels are real `<button>`s with `aria-pressed`; the deck is a `role="group"` labelled "Sample reels". The hint under the deck tells people to swipe, scroll or tap.
+- Selecting a reel: click/tap a panel, focus it, `←`/`→`, a horizontal wheel/trackpad gesture, or a horizontal swipe on the deck. Vertical scroll is never intercepted (no `preventDefault`), so the page stays free for the next section; `↑`/`↓` scroll the page. Hover only pauses/previews; it does not select, so panels never re-fan under the cursor. `useReelNav` owns wheel, keys and swipe.
+- Panels are real `<button>`s with `aria-pressed`; the deck is a `role="group"` labelled "Sample reels". The hint under the deck tells people to swipe sideways or tap.
 - Mouse-only effects: orange light follows the cursor (`--mx/--my` on `.hero`), panels tilt in 3D (`--nx/--ny` on `.deck`), a cursor glare moves across the active panel (`--gx/--gy`), wordmark letters near the cursor lift and warm to ember (`--p` per letter), buttons lean toward the cursor and run a shine. All written as CSS variables so React does not re-render.
 - Active panel scales up and glows; inactive panels dim and freeze. Timecode counts from zero when a panel turns on and holds while paused. Scenes have per-scene motion (sun breathe, stamp, text up, tag in, HUD in) that only runs while that reel is on.
 - Page chrome: fixed film grain over everything, a cinema vignette behind the content, 1px frame lines at the app edges on desktop.
@@ -61,7 +61,7 @@ Scenes use container query units (`cqw`) so they scale with panel width.
 ## Status
 - `npm run build` (tsc + vite) and `npm run lint` (ESLint) pass.
 - Checked in the in-app browser: no console errors; the document is exactly viewport height at 1440×900, 1280×800, 1024×768, 800×526, 390×844, 360×640, 320×568 and 844×390 (no horizontal or vertical page scroll).
-- Interaction verified: auto-cycle advances after `--dwell`, click and `ArrowRight` select, wheel and swipe step, hovering the deck pauses the dwell animation and resumes on leave.
+- Interaction verified: auto-cycle advances after `--dwell`, click and `ArrowRight` select, horizontal wheel and swipe step, vertical wheel does not change the reel, hovering the deck pauses the dwell animation and resumes on leave.
 - Still worth checking on a real phone: fold animation (3D, `backface-visibility`), tilt feel, letter effect, anything clipped.
 - Placeholder scenes only. No real footage, logo or photo yet.
 
