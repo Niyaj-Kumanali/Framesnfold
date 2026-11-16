@@ -19,6 +19,8 @@
 - Dark cinematic, motion-first. Deliberately a single dark look, no light theme.
 - Tokens (in `src/index.css`): `--ink #0e0d0c`, `--paper #f2ede6`, `--ember #ff5a1f` (the one accent), `--ember-deep #c9360a`, `--mute #aaa299`, `--line`, `--dwell 3.8s`.
 - Boldness lives in one place: the three vertical 9:16 reel panels that start folded in half and unfold once on load (the "fold" in framesnfold). Everything else stays quiet.
+- Header bar: the wordmark in Big Shoulders with a small 9:16 mark beside it — cream panel, ember panel, hinged down the middle, the ember half folds open on hover/focus. Social accounts are icon-only on the right (Instagram page, Instagram personal with an ember dot badge, YouTube), 2rem tap targets, 18px stroke icons drawn inline. No section links yet; there are no sections.
+- The bar is sticky and hides while scrolling down, returning on scroll up or at the top. It only grows its ink backdrop and hairline once the page has moved, so at rest it is just type and icons over the hero. `useHideOnScroll` owns that.
 - Single viewport: the app is a grid (`auto` header + `1fr` hero) at `min-height: 100svh`. The document must never scroll at any size. Verified exact fit at 1440×900, 1280×800, 1024×768, 800×526, 390×844, 360×640, 320×568, 844×390.
 - Hero layout: left column has the big lowercase wordmark, a cycling pitch line, a short lead, two buttons. Right column is a fanned, overlapping deck of the three panels (active centred, the other two fanned left/right). Under 760px it stacks to one column with the deck below the copy.
 - The deck fan uses a circular offset (`--o`), so the neighbours are always one on each side; the deck never drifts to an edge. Active panel is centred and larger; the others sit lower, smaller, dimmed and rotated.
@@ -30,7 +32,8 @@
 - One phrase, one panel and one progress bar are "on" at a time. The ember underline under the phrase runs for `--dwell`, and its `animationend` (name `dwell`) advances to the next reel. Pausing is done in CSS (`.paused` freezes the bar and the panel progress).
 - Selecting a reel: click/tap a panel, focus it, `←`/`→`, a horizontal wheel/trackpad gesture, or a horizontal swipe on the deck. Vertical scroll is never intercepted (no `preventDefault`), so the page stays free for the next section; `↑`/`↓` scroll the page. Hover only pauses/previews; it does not select, so panels never re-fan under the cursor. `useReelNav` owns wheel, keys and swipe.
 - Panels are real `<button>`s with `aria-pressed`; the deck is a `role="group"` labelled "Sample reels". The hint under the deck tells people to swipe sideways or tap.
-- Mouse-only effects: orange light follows the cursor (`--mx/--my` on `.hero`), panels tilt in 3D (`--nx/--ny` on `.deck`), a cursor glare moves across the active panel (`--gx/--gy`), wordmark letters near the cursor lift and warm to ember (`--p` per letter), buttons lean toward the cursor and run a shine. All written as CSS variables so React does not re-render.
+- Mouse-only effects: orange light follows the cursor (`--mx/--my` on `.hero`), panels tilt in 3D (`--nx/--ny` on `.deck`), a cursor glare moves across the active panel (`--gx/--gy`), wordmark letters near the cursor lift and warm to ember (`--p` per letter). All written as CSS variables so React does not re-render.
+- Buttons are static: no magnet lean, no shine sweep. The only thing that answers the pointer is the `↗`, which shifts 3px up and right on hover. Colour changes on `.primary`/`.ghost` stay.
 - Active panel scales up and glows; inactive panels dim and freeze. Timecode counts from zero when a panel turns on and holds while paused. Scenes have per-scene motion (sun breathe, stamp, text up, tag in, HUD in) that only runs while that reel is on.
 - Page chrome: fixed film grain over everything, a cinema vignette behind the content, 1px frame lines at the app edges on desktop.
 - `prefers-reduced-motion`: no fold, no cycling, no grain, no pointer effects, no scene motion, static progress.
@@ -47,14 +50,14 @@ src/hooks/useReelNav.ts        wheel, keyboard and swipe navigation for the deck
 src/hooks/usePointerFx.ts      cursor light, deck tilt and glare vars
 src/hooks/useTimecode.ts       30fps timecode written straight to the DOM
 src/hooks/useReducedMotion.ts
-src/components/Header/         Header.tsx, Header.css (entrance + compact mobile)
+src/hooks/useHideOnScroll.ts   sticky bar: hidden on scroll down, stuck backdrop
+src/components/Header/         Header.tsx, Header.css (wordmark + mark, icon links, sticky)
 src/components/Hero/
   Hero.tsx, Hero.css           layout, cycle wiring, deck, all hero styles
   Reel.tsx                     one folding panel (single scene layer + fold halves)
   scenes.tsx                   3 placeholder scenes drawn in CSS ("Sample frame")
   reels.tsx                    REELS array, order = cycle order
   Wordmark.tsx                 letter rise + cursor proximity
-  MagnetLink.tsx               button-styled link that leans toward the mouse
 ```
 Scenes use container query units (`cqw`) so they scale with panel width.
 
@@ -62,6 +65,8 @@ Scenes use container query units (`cqw`) so they scale with panel width.
 - `npm run build` (tsc + vite) and `npm run lint` (ESLint) pass.
 - Checked in the in-app browser: no console errors; the document is exactly viewport height at 1440×900, 1280×800, 1024×768, 800×526, 390×844, 360×640, 320×568 and 844×390 (no horizontal or vertical page scroll).
 - Interaction verified: auto-cycle advances after `--dwell`, click and `ArrowRight` select, horizontal wheel and swipe step, vertical wheel does not change the reel, hovering the deck pauses the dwell animation and resumes on leave.
+- Header verified: one row at every tested size (no wrap), icon links 2rem (1.85rem mobile), last icon within 1px of the frame edge, bar hides on scroll down and returns on scroll up with the backdrop only when stuck. Links: framesnfold IG, `@nawaz_frames` IG (ember dot), YouTube `@framesnfold` (channel confirmed live).
+- Buttons verified static: pointermove leaves `transform: none` and sets no `--bx/--by`; on hover the button stays put and the `↗` computes to `translate(3px, -3px)`.
 - Still worth checking on a real phone: fold animation (3D, `backface-visibility`), tilt feel, letter effect, anything clipped.
 - Placeholder scenes only. No real footage, logo or photo yet.
 

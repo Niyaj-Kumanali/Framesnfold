@@ -2,7 +2,6 @@ import { useRef } from 'react'
 import { useCycle } from '../../hooks/useCycle'
 import { usePointerFx } from '../../hooks/usePointerFx'
 import { useReelNav } from '../../hooks/useReelNav'
-import MagnetLink from './MagnetLink'
 import Reel from './Reel'
 import Wordmark from './Wordmark'
 import { REELS } from './reels'
@@ -57,12 +56,12 @@ export default function Hero() {
         </p>
 
         <div className="cta">
-          <MagnetLink variant="primary" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
+          <a className="btn primary" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
             Watch the reels
-          </MagnetLink>
-          <MagnetLink variant="ghost" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
+          </a>
+          <a className="btn ghost" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
             Book a reel on Instagram
-          </MagnetLink>
+          </a>
         </div>
       </div>
 

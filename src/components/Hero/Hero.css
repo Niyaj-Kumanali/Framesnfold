@@ -195,43 +195,27 @@
 .btn {
   position: relative;
   display: inline-block;
-  overflow: hidden;
   padding: 0.85rem 1.35rem;
   border-radius: 6px;
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
   border: 1px solid var(--line);
-  transform: translate(var(--bx, 0px), var(--by, 0px));
   transition:
-    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
     background-color 0.15s,
     border-color 0.15s;
 }
 
-.btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.22), transparent 65%);
-  transform: translateX(-120%);
-  transition: transform 0.5s ease-out;
-  pointer-events: none;
-}
-
-.btn:hover::before {
-  transform: translateX(120%);
-}
-
+/* the button stays put; only the arrow answers the pointer */
 .btn::after {
   content: '↗';
   display: inline-block;
   margin-left: 0.5em;
-  transition: transform 0.25s ease-out;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .btn:hover::after {
-  transform: translate(2px, -2px);
+  transform: translate(3px, -3px);
 }
 
 .btn.primary {
@@ -948,7 +932,6 @@
     transition: none;
   }
 
-  .btn::before,
   .btn::after,
   .reel::before,
   .reel::after {
