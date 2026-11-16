@@ -31,6 +31,7 @@
 ## Behaviour (implemented)
 - One phrase, one panel and one progress bar are "on" at a time. The ember underline under the phrase runs for `--dwell`, and its `animationend` (name `dwell`) advances to the next reel. Pausing is done in CSS (`.paused` freezes the bar and the panel progress).
 - Selecting a reel: click/tap a panel, focus it, `←`/`→`, a horizontal wheel/trackpad gesture, or a horizontal swipe on the deck. Vertical scroll is never intercepted (no `preventDefault`), so the page stays free for the next section; `↑`/`↓` scroll the page. Hover only pauses/previews; it does not select, so panels never re-fan under the cursor. `useReelNav` owns wheel, keys and swipe.
+- Pause rules: hover pauses, and clicking a panel clears that pause so the chosen reel plays (the pointer is still over the deck, so it stays playing until it leaves and returns). Focus only pauses when it came from the keyboard (`:focus-visible`) — a click also focuses the button, and pausing on that froze the cycle until the user clicked elsewhere.
 - Panels are real `<button>`s with `aria-pressed`; the deck is a `role="group"` labelled "Sample reels". The hint under the deck tells people to swipe sideways or tap.
 - Mouse-only effects: orange light follows the cursor (`--mx/--my` on `.hero`), panels tilt in 3D (`--nx/--ny` on `.deck`), a cursor glare moves across the active panel (`--gx/--gy`), wordmark letters near the cursor lift and warm to ember (`--p` per letter). All written as CSS variables so React does not re-render.
 - Buttons are static: no magnet lean, no shine sweep. The only thing that answers the pointer is the `↗`, which shifts 3px up and right on hover. Colour changes on `.primary`/`.ghost` stay.
@@ -67,6 +68,7 @@ Scenes use container query units (`cqw`) so they scale with panel width.
 - Interaction verified: auto-cycle advances after `--dwell`, click and `ArrowRight` select, horizontal wheel and swipe step, vertical wheel does not change the reel, hovering the deck pauses the dwell animation and resumes on leave.
 - Header verified: one row at every tested size (no wrap), icon links 2rem (1.85rem mobile), last icon within 1px of the frame edge, bar hides on scroll down and returns on scroll up with the backdrop only when stuck. Links: framesnfold IG, `@nawaz_frames` IG (ember dot), YouTube `@framesnfold` (channel confirmed live).
 - Buttons verified static: pointermove leaves `transform: none` and sets no `--bx/--by`; on hover the button stays put and the `↗` computes to `translate(3px, -3px)`.
+- Pause/resume verified: pointerenter on the deck adds `.paused` and the timecode holds; a click while the pointer stays on the deck removes `.paused` and the count runs again (2.73s in 3s); keyboard focus pauses and blur resumes. The old bug was `onFocus` pausing for mouse clicks too, leaving `focusing` true until the user clicked away.
 - Still worth checking on a real phone: fold animation (3D, `backface-visibility`), tilt feel, letter effect, anything clipped.
 - Placeholder scenes only. No real footage, logo or photo yet.
 

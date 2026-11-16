@@ -85,7 +85,13 @@ export default function Hero() {
               current={current}
               count={REELS.length}
               paused={paused}
-              onSelect={select}
+              onSelect={(i) => {
+                select(i)
+                /* A click means "play this one", so drop the hover pause. The
+                   pointer is still over the deck, so it stays unpaused until it
+                   leaves and comes back. */
+                setHovering(false)
+              }}
               onFocusChange={setFocusing}
             />
           ))}

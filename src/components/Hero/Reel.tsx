@@ -50,9 +50,11 @@ export default function Reel({
       aria-label={`${reel.label}, sample reel`}
       aria-pressed={active}
       onClick={() => onSelect(index)}
-      onFocus={() => {
+      onFocus={(e) => {
         onSelect(index)
-        onFocusChange(true)
+        /* A click focuses the button too. Only keyboard focus should hold the
+           cycle; otherwise a click pauses it until the user clicks elsewhere. */
+        if (e.currentTarget.matches(':focus-visible')) onFocusChange(true)
       }}
       onBlur={() => onFocusChange(false)}
     >
