@@ -386,6 +386,36 @@
   left: 0;
 }
 
+/* Real footage. The video sits under the drawn scene so the HUD, the vignette
+   and the fade-in are unchanged; once the first frame is decoded the artwork
+   steps aside and the footage shows through. The HUD goes light, because the
+   shop and offer scenes use dark type on their own backgrounds. */
+.scene .vid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  background: var(--ink);
+}
+
+.scene.live .s {
+  background: none;
+  --fg: var(--paper);
+}
+
+.scene.live .s::before,
+.scene.live .s > *:not(.ui) {
+  display: none;
+}
+
+/* "Sample frame" is only true of the drawn placeholders. */
+.scene.live .ui.bottom span {
+  display: none;
+}
+
 .fold {
   position: absolute;
   inset: 0;
@@ -422,6 +452,19 @@
      half and shows up as a division at the join. */
   animation: unfold 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
   animation-delay: calc(var(--i) * 0.2s + 0.3s);
+}
+
+/* Poster stills for the fold intro, sized to the whole panel and offset exactly
+   like `.l .s` / `.r .s`, so the two halves line up before the crease opens. */
+.half.has-poster {
+  background-image: var(--poster);
+  background-size: 200% 100%;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.half.r.has-poster {
+  background-position: right center;
 }
 
 .shade {

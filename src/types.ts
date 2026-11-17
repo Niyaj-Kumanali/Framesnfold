@@ -11,6 +11,12 @@ export type ReelData = {
   label: string
   /** Text shown in the cycling headline. */
   phrase: string
-  /** Placeholder scene. Replace with real footage later. */
+  /** Placeholder scene. Also the fallback when the video is missing. */
   Scene: ComponentType
+  /**
+   * Real footage. Drop the files in `public/reels/` and this is all the wiring
+   * needed: the panel plays the video, the fold halves use the poster still and
+   * the scene above stays as the fallback.
+   */
+  video?: { src: string; poster: string }
 }
