@@ -14,6 +14,17 @@ npm run build
 npm run lint
 ```
 
+## Links and booking
+
+Accounts and the booking destination live in `src/config.ts`.
+
+- Set `whatsappNumber` to the international format, digits only (`919876543210`).
+  The hero button then says "Book a reel on WhatsApp" and opens `wa.me` with
+  `whatsappMessage` pre-filled.
+- Leave it empty and the button asks for an Instagram DM (`ig.me/m/framesnfold`).
+- `instagram`, `instagramPersonal` and `youtube` feed the header icons and the
+  "Watch the reels" button.
+
 ## Adding reels
 
 The three hero panels are wired for real footage. Drop these files into

@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { bookLink, LINKS } from '../../config'
 import { useCycle } from '../../hooks/useCycle'
 import { usePointerFx } from '../../hooks/usePointerFx'
 import { useReelNav } from '../../hooks/useReelNav'
@@ -7,7 +8,8 @@ import Wordmark from './Wordmark'
 import { REELS } from './reels'
 import './Hero.css'
 
-const INSTAGRAM = 'https://www.instagram.com/framesnfold'
+/* WhatsApp when a number is configured, an Instagram DM until then. */
+const BOOKING = bookLink()
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null)
@@ -56,11 +58,11 @@ export default function Hero() {
         </p>
 
         <div className="cta">
-          <a className="btn primary" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
+          <a className="btn primary" href={LINKS.instagram} target="_blank" rel="noopener noreferrer">
             Watch the reels
           </a>
-          <a className="btn ghost" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
-            Book a reel on Instagram
+          <a className="btn ghost" href={BOOKING.href} target="_blank" rel="noopener noreferrer">
+            {BOOKING.label}
           </a>
         </div>
       </div>

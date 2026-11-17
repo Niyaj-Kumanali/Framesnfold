@@ -1,9 +1,6 @@
+import { LINKS } from '../../config'
 import { useHideOnScroll } from '../../hooks/useHideOnScroll'
 import './Header.css'
-
-const INSTAGRAM = 'https://www.instagram.com/framesnfold'
-const INSTAGRAM_PERSONAL = 'https://www.instagram.com/nawaz_frames'
-const YOUTUBE = 'https://www.youtube.com/@framesnfold'
 
 /** Instagram: rounded frame, lens, flash. */
 function InstagramMark() {
@@ -52,7 +49,7 @@ export default function Header() {
       <nav aria-label="Social accounts">
         <a
           className="acct"
-          href={INSTAGRAM}
+          href={LINKS.instagram}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="framesnfold on Instagram"
@@ -62,7 +59,7 @@ export default function Header() {
         </a>
         <a
           className="acct personal"
-          href={INSTAGRAM_PERSONAL}
+          href={LINKS.instagramPersonal}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Nawaz Kumanali's personal Instagram"
@@ -74,7 +71,7 @@ export default function Header() {
         </a>
         <a
           className="acct"
-          href={YOUTUBE}
+          href={LINKS.youtube}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="framesnfold on YouTube"

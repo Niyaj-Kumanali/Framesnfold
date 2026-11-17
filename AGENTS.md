@@ -38,14 +38,20 @@
 - Active panel scales up and glows; inactive panels dim and freeze. Timecode counts from zero when a panel turns on and holds while paused. Scenes have per-scene motion (sun breathe, stamp, text up, tag in, HUD in) that only runs while that reel is on.
 - Page chrome: fixed film grain over everything, a cinema vignette behind the content, 1px frame lines at the app edges on desktop.
 - `prefers-reduced-motion`: no fold, no cycling, no grain, no pointer effects, no scene motion, static progress.
+- Reels: a single `<video muted loop playsInline preload poster aria-hidden disablePictureInPicture>` sits under the drawn scene inside the active panel. Only the active reel plays; `currentTime` resets when a reel turns on; hover/keyboard pause pauses it too. It shows once `loadeddata` fires and stays behind the drawn scene until then, so a missing, broken or slow clip (about 4 s) falls back to the placeholder for good. The fold halves never get their own video — they use the poster JPEG, sized `200% 100%` and offset like `.l .s`/`.r .s`, so the crease cannot drift. Active + next preload `auto`, the third `metadata`.
 - Wordmark: `h1` with `aria-label`, letters `aria-hidden`. The pitch has a screen-reader-only full sentence.
+- Accounts and the booking destination live in `src/config.ts` (`LINKS`, `bookLink()`). The ghost CTA says "Book a reel on WhatsApp" and opens `wa.me` once `whatsappNumber` is set; until then it says "Book a reel on Instagram" and opens `ig.me/m/framesnfold`.
+- Link preview: `index.html` carries OG/Twitter/canonical tags pointing at `https://framesnfold.vercel.app/`, with `public/og.png` (1200×630, ink background, ember accent).
 
 ## File map
 ```
-index.html                     fonts, meta (viewport-fit=cover), title "framesnfold"
+index.html                     fonts, meta (viewport-fit=cover), OG/Twitter tags, title "framesnfold"
+public/og.png                  link preview, 1200x630, generated once
+public/reels/                  footage slot: bike|shop|offer .mp4 + .jpg (empty apart from .gitkeep)
 src/index.css                  tokens, body, grain, .sr, .app viewport grid, vignette
 src/App.tsx                    .app wrapper: Header + Hero
-src/types.ts                   CSSVars (custom-property typing), ReelData
+src/config.ts                  LINKS (accounts, whatsappNumber, whatsappMessage) + bookLink()
+src/types.ts                   CSSVars (custom-property typing), ReelData (+ optional video)
 src/hooks/useCycle.ts          current reel, paused state, next/prev
 src/hooks/useReelNav.ts        wheel, keyboard and swipe navigation for the deck
 src/hooks/usePointerFx.ts      cursor light, deck tilt and glare vars
@@ -55,9 +61,9 @@ src/hooks/useHideOnScroll.ts   sticky bar: hidden on scroll down, stuck backdrop
 src/components/Header/         Header.tsx, Header.css (wordmark + mark, icon links, sticky)
 src/components/Hero/
   Hero.tsx, Hero.css           layout, cycle wiring, deck, all hero styles
-  Reel.tsx                     one folding panel (single scene layer + fold halves)
+  Reel.tsx                     one folding panel: video, status/fallback, fold halves
   scenes.tsx                   3 placeholder scenes drawn in CSS ("Sample frame")
-  reels.tsx                    REELS array, order = cycle order
+  reels.tsx                    REELS array, order = cycle order, video paths
   Wordmark.tsx                 letter rise + cursor proximity
 ```
 Scenes use container query units (`cqw`) so they scale with panel width.
@@ -69,22 +75,29 @@ Scenes use container query units (`cqw`) so they scale with panel width.
 - Header verified: one row at every tested size (no wrap), icon links 2rem (1.85rem mobile), last icon within 1px of the frame edge, bar hides on scroll down and returns on scroll up with the backdrop only when stuck. Links: framesnfold IG, `@nawaz_frames` IG (ember dot), YouTube `@framesnfold` (channel confirmed live).
 - Buttons verified static: pointermove leaves `transform: none` and sets no `--bx/--by`; on hover the button stays put and the `↗` computes to `translate(3px, -3px)`.
 - Pause/resume verified: pointerenter on the deck adds `.paused` and the timecode holds; a click while the pointer stays on the deck removes `.paused` and the count runs again (2.73s in 3s); keyboard focus pauses and blur resumes. The old bug was `onFocus` pausing for mouse clicks too, leaving `focusing` true until the user clicked away.
+- Reel playback verified with generated 9:16 test clips: only the active panel plays, click/`ArrowRight`/swipe/horizontal wheel switch and reset to 0, hover holds and leaving resumes, a missing `shop.mp4` fell back to the drawn scene with no console errors.
+- Booking verified both ways: with `whatsappNumber` empty the ghost CTA reads "Book a reel on Instagram" → `https://ig.me/m/framesnfold`; with a number set (spaces allowed, stripped to digits) it reads "Book a reel on WhatsApp" → `https://wa.me/<digits>?text=<encoded message>`. Numbers are never hardcoded in components. The test number was reverted to `''`.
+- Link preview verified: tags parse in `index.html`, `public/og.png` is exactly 1200×630 and 64 KB (ink `#0e0d0c` background, cream wordmark, ember rule and mark).
 - Still worth checking on a real phone: fold animation (3D, `backface-visibility`), tilt feel, letter effect, anything clipped.
-- Placeholder scenes only. No real footage, logo or photo yet.
+- `public/reels/` is empty apart from `.gitkeep`, so every panel shows its drawn placeholder until real clips are added. No real footage, logo or photo yet.
 
-## Known issue to solve next: real video in the panels
-Each panel renders its scene twice (left and right half) so it can fold at the crease. Two `<video>` elements would drift out of sync. Options:
-1. Keep the fold only for the intro, then swap the panel to a single `<video>` once it has opened.
-2. Draw one video into two canvases.
-3. Put one `<video>` under the halves and mask/clip it.
-Needs a decision once Niyaj has a few real reels (9:16 mp4, short, compressed; put in `public/reels/`). Keep `muted loop playsInline`.
+## Real footage
+The video-in-the-fold question is settled: one `<video>` under the continuous scene, poster JPEG for the fold halves. Adding clips is now just files:
+
+```
+public/reels/bike.mp4   public/reels/bike.jpg
+public/reels/shop.mp4   public/reels/shop.jpg
+public/reels/offer.mp4  public/reels/offer.jpg
+```
+
+9:16, H.264, no audio, roughly 2 MB each. README has the ffmpeg commands. No code change is needed.
 
 ## Next steps
 1. Review on a real phone (fold, tilt, small-screen spacing), then fix what looks off.
-2. Replace placeholder scenes with real reels (see above).
-3. Real brand assets if they exist (logo, colours), then adjust the ember accent if needed.
-4. Point "Book a reel" to a real contact path (WhatsApp or Instagram DM link), once Nawaz decides.
-5. Deploy to Vercel (GitHub push is done).
+2. Drop the three real clips into `public/reels/` (see above) and check them on mobile data.
+3. Real brand assets if they exist (logo, colours), then adjust the ember accent if needed. Swap `og.png` if the wordmark or accent changes.
+4. Set `whatsappNumber` in `src/config.ts` once Nawaz picks a number; the booking button switches over on its own.
+5. Deploy to Vercel (GitHub push is done), then point the OG/canonical URLs at the real domain if one is added.
 6. Then the rest of the site: work/portfolio grid, services, about, contact.
 
 ## Working preferences
