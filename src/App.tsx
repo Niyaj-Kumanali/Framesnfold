@@ -1,5 +1,6 @@
 import Header from './components/Header/Header'
 import Hero from './components/Hero/Hero'
+import Work from './components/Work/Work'
 
 export default function App() {
   return (
@@ -7,11 +8,9 @@ export default function App() {
       <Header />
       <Hero />
 
-      {/* The next four tasks fill these in. Their ids are here from the start
-          so the header links and the hero CTA can scroll to them now. */}
-      <section id="work" className="section section-placeholder">
-        <h2>Recent work</h2>
-      </section>
+      <Work />
+
+      {/* Filled in by the remaining tasks. */}
       <section id="services" className="section section-placeholder">
         <h2>What it costs</h2>
       </section>
