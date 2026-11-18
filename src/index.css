@@ -115,10 +115,6 @@ button:focus-visible {
   scroll-margin-top: var(--bar-h, 0px);
 }
 
-.section-placeholder {
-  min-height: 55svh;
-}
-
 .section h2 {
   margin: 0 0 1rem;
   font-family: var(--f-display);
