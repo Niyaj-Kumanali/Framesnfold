@@ -1,5 +1,6 @@
 import Header from './components/Header/Header'
 import Hero from './components/Hero/Hero'
+import Services from './components/Services/Services'
 import Work from './components/Work/Work'
 
 export default function App() {
@@ -10,10 +11,9 @@ export default function App() {
 
       <Work />
 
+      <Services />
+
       {/* Filled in by the remaining tasks. */}
-      <section id="services" className="section section-placeholder">
-        <h2>What it costs</h2>
-      </section>
       <section id="about" className="section section-placeholder">
         <h2>Hi, I'm Nawaz.</h2>
       </section>

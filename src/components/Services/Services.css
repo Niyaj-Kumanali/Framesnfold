@@ -1,0 +1,98 @@
+.services-context {
+  margin: 0;
+  color: var(--mute);
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+}
+
+/* Not three equal cards: one large offer, one quiet note beside it. */
+.services-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  align-items: start;
+  gap: clamp(2rem, 5vw, 5rem);
+  margin-top: clamp(1.8rem, 4vh, 3rem);
+}
+
+.service-primary {
+  padding: clamp(1.5rem, 3.5vw, 2.75rem);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--paper) 5%, var(--ink));
+}
+
+.service-primary h3 {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  line-height: 1;
+}
+
+.service-price {
+  margin: clamp(0.9rem, 2vh, 1.5rem) 0 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.service-list {
+  margin: clamp(1.2rem, 2.5vh, 1.8rem) 0 clamp(1.5rem, 3vh, 2rem);
+  padding: 0;
+  list-style: none;
+  color: var(--mute);
+}
+
+.service-list li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+}
+
+.service-list li + li {
+  margin-top: 0.45rem;
+}
+
+.service-list li::before {
+  content: '';
+  position: absolute;
+  top: 0.75em;
+  left: 0;
+  width: 5px;
+  height: 1px;
+  background: var(--mute);
+}
+
+.service-secondary {
+  padding-top: clamp(0.4rem, 1.5vw, 1rem);
+}
+
+.service-secondary h3 {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  line-height: 1.05;
+  color: var(--mute);
+}
+
+.service-text {
+  margin: 0.9rem 0 1.5rem;
+  max-width: 34ch;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.services-note {
+  margin: clamp(1.8rem, 4vh, 2.75rem) 0 0;
+  color: var(--mute);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 760px) {
+  .services-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.25rem;
+  }
+}
