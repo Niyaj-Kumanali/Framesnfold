@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { bookLink, LINKS } from '../../config'
+import { bookLink } from '../../config'
 import { useCycle } from '../../hooks/useCycle'
 import { usePointerFx } from '../../hooks/usePointerFx'
 import { useReelNav } from '../../hooks/useReelNav'
@@ -69,7 +69,7 @@ export default function Hero() {
         </p>
 
         <div className="cta">
-          <a className="btn primary" href={LINKS.instagram} target="_blank" rel="noopener noreferrer">
+          <a className="btn primary" href="#work">
             Watch the reels
           </a>
           <a className="btn ghost" href={BOOKING.href} target="_blank" rel="noopener noreferrer">

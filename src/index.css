@@ -20,6 +20,13 @@ html {
   background: var(--ink);
 }
 
+/* Anchors glide only when the visitor has not asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 body {
   margin: 0;
   min-height: 100%;
@@ -91,15 +98,33 @@ button:focus-visible {
   min-height: 100svh;
 }
 
-/* One stage, one viewport. The header keeps its height; the hero takes the rest. */
+/* Normal flow: only the hero is viewport-fitted, the sections scroll below it. */
 .app {
   position: relative;
-  min-height: 100svh;
   max-width: 1280px;
   margin-inline: auto;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
   /* No app-edge border: it reads as a hard vertical edge against the glow. */
+}
+
+/* The bar floats over the hero, so anchored sections need its real height as
+   clearance. --bar-h is measured by useHeaderHeight. */
+.section {
+  position: relative;
+  z-index: 1;
+  padding-block: clamp(3rem, 9vh, 6rem);
+  scroll-margin-top: var(--bar-h, 0px);
+}
+
+.section-placeholder {
+  min-height: 55svh;
+}
+
+.section h2 {
+  margin: 0 0 1rem;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1;
 }
 
 /* soft cinema vignette, behind the content */

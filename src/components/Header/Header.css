@@ -1,6 +1,6 @@
 .bar-top {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem 1.5rem;
@@ -90,19 +90,57 @@
   padding-top: 0.12em;
 }
 
+/* ---- section links ---- */
+
+.section-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 1.8vw, 1.6rem);
+  white-space: nowrap;
+}
+
+.section-nav a {
+  color: var(--mute);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.section-nav a:hover,
+.section-nav a:focus-visible {
+  color: var(--paper);
+}
+
+/* Small, filled: the one ember thing in the bar at rest. */
+.section-nav .book-mini {
+  padding: 0.4rem 0.7rem;
+  border-radius: 5px;
+  background: var(--ember);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.section-nav .book-mini:hover,
+.section-nav .book-mini:focus-visible {
+  background: #ff7440;
+  color: var(--ink);
+}
+
 /* ---- accounts ---- */
 
-.bar-top nav {
+.social-nav {
   display: flex;
   align-items: center;
   gap: 0.2rem;
+  flex: none;
   /* pull back by the icon button's own padding so the icon, not the box,
      lines up with the app edge */
   margin-right: -0.42rem;
   color: var(--mute);
 }
 
-.bar-top nav a {
+.social-nav a {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -116,7 +154,7 @@
   transition: color 0.2s;
 }
 
-.bar-top nav a:hover {
+.social-nav a:hover {
   color: var(--paper);
 }
 
@@ -147,9 +185,16 @@
   box-shadow: 0 0 0 2px var(--ink);
 }
 
+/* Phone: the three section links go, "Book a reel" and the icons stay. */
+@media (max-width: 760px) {
+  .section-nav a:not(.book-mini) {
+    display: none;
+  }
+}
+
 @media (max-width: 600px) {
   .bar-top {
-    gap: 0.4rem 1rem;
+    gap: 0.4rem 0.6rem;
     padding-block: 0.6rem;
   }
 
@@ -161,12 +206,17 @@
     height: 1.15rem;
   }
 
-  .bar-top nav {
+  .section-nav .book-mini {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.75rem;
+  }
+
+  .social-nav {
     gap: 0.05rem;
     margin-right: -0.36rem;
   }
 
-  .bar-top nav a {
+  .social-nav a {
     width: 1.85rem;
     height: 1.85rem;
   }
@@ -194,7 +244,8 @@
   }
 
   .mark .panel.hinge,
-  .bar-top nav a {
+  .section-nav a,
+  .social-nav a {
     transition: none;
   }
 }

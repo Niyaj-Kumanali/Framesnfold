@@ -1,6 +1,11 @@
-import { LINKS } from '../../config'
+import { useRef } from 'react'
+import { bookLink, LINKS } from '../../config'
+import { useHeaderHeight } from '../../hooks/useHeaderHeight'
 import { useHideOnScroll } from '../../hooks/useHideOnScroll'
 import './Header.css'
+
+/* Short label in the bar; the destination still follows the WhatsApp setting. */
+const BOOKING = bookLink()
 
 /** Instagram: rounded frame, lens, flash. */
 function InstagramMark() {
@@ -24,11 +29,13 @@ function YouTubeMark() {
 }
 
 /**
- * The bar: wordmark and folding panel mark on the left, the accounts on the
- * right. It sticks, hides while scrolling down and returns on the way up, so
- * the hero stays the only thing on screen at rest.
+ * The bar: wordmark and folding panel mark on the left, section links and the
+ * accounts on the right. It sticks, hides while scrolling down and returns on
+ * the way up, so the hero keeps the same quiet first screen as before.
  */
 export default function Header() {
+  const barRef = useRef<HTMLElement>(null)
+  useHeaderHeight(barRef)
   const { hidden, stuck } = useHideOnScroll()
 
   const classes = ['bar-top']
@@ -36,7 +43,7 @@ export default function Header() {
   if (hidden) classes.push('is-hidden')
 
   return (
-    <header className={classes.join(' ')}>
+    <header ref={barRef} className={classes.join(' ')}>
       <a className="brand" href="#top" aria-label="framesnfold, back to top">
         {/* A frame that folds: cream panel, ember panel, hinged down the middle. */}
         <span className="mark" aria-hidden="true">
@@ -46,7 +53,21 @@ export default function Header() {
         <span className="brand-name">framesnfold</span>
       </a>
 
-      <nav aria-label="Social accounts">
+      <nav className="section-nav" aria-label="Sections">
+        <a href="#work">Work</a>
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a
+          className="book-mini"
+          href={BOOKING.href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Book a reel
+        </a>
+      </nav>
+
+      <nav className="social-nav" aria-label="Social accounts">
         <a
           className="acct"
           href={LINKS.instagram}
