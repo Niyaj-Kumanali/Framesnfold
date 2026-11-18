@@ -99,7 +99,7 @@ button:focus-visible {
   margin-inline: auto;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  border-inline: 1px solid var(--line);
+  /* No app-edge border: it reads as a hard vertical edge against the glow. */
 }
 
 /* soft cinema vignette, behind the content */
@@ -112,15 +112,25 @@ button:focus-visible {
   background: radial-gradient(ellipse at 50% 44%, transparent 52%, rgba(0, 0, 0, 0.55) 100%);
 }
 
+/* Orange light that follows the cursor. Fixed to the viewport, not the hero,
+   so it crosses the header and the side gutters without a hard edge; --mx/--my
+   are viewport pixels written by usePointerFx on this same element. */
+.app::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    560px circle at var(--mx, 68%) var(--my, 42%),
+    rgba(255, 90, 31, 0.16),
+    transparent 70%
+  );
+}
+
 .app > * {
   position: relative;
   z-index: 1;
-}
-
-@media (max-width: 760px) {
-  .app {
-    border-inline: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -5,7 +5,7 @@ const clamp = (v: number) => Math.max(-1, Math.min(1, v))
 
 /**
  * Mouse-only effects, written as CSS variables so React never re-renders:
- *  - hero:  --mx / --my  (cursor position, drives the orange light)
+ *  - app:   --mx / --my  (viewport pixels, drives the full-viewport glow)
  *  - deck:  --nx / --ny  (-1..1, drives the panel tilt)
  *           --gx / --gy  (percentage, drives the glare on the active panel)
  */
@@ -20,6 +20,11 @@ export function usePointerFx(
     const reels = reelsRef.current
     if (!hero || !reels || reduced) return
 
+    /* The glow is on .app as a fixed layer, so it needs viewport coordinates,
+       not hero-relative ones. Listen on the window so it also follows the
+       cursor over the header and the side gutters. */
+    const app = hero.closest<HTMLElement>('.app')
+
     let raf = 0
     let px = 0
     let py = 0
@@ -28,8 +33,8 @@ export function usePointerFx(
       raf = 0
       const h = hero.getBoundingClientRect()
       const r = reels.getBoundingClientRect()
-      hero.style.setProperty('--mx', `${px - h.left}px`)
-      hero.style.setProperty('--my', `${py - h.top}px`)
+      app?.style.setProperty('--mx', `${px}px`)
+      app?.style.setProperty('--my', `${py}px`)
       reels.style.setProperty(
         '--nx',
         clamp((px - (r.left + r.width / 2)) / (h.width / 2)).toFixed(3),
@@ -57,10 +62,10 @@ export function usePointerFx(
       reels.style.setProperty('--gy', '50%')
     }
 
-    hero.addEventListener('pointermove', onMove)
+    window.addEventListener('pointermove', onMove)
     hero.addEventListener('pointerleave', onLeave)
     return () => {
-      hero.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointermove', onMove)
       hero.removeEventListener('pointerleave', onLeave)
       cancelAnimationFrame(raf)
     }

@@ -97,7 +97,7 @@
   align-items: center;
   gap: 0.2rem;
   /* pull back by the icon button's own padding so the icon, not the box,
-     lines up with the frame edge */
+     lines up with the app edge */
   margin-right: -0.42rem;
   color: var(--mute);
 }

@@ -12,19 +12,8 @@
   padding-block: clamp(0.5rem, 2.4vh, 2.5rem);
 }
 
-/* light that follows the cursor */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: radial-gradient(
-    560px circle at var(--mx, 68%) var(--my, 42%),
-    rgba(255, 90, 31, 0.16),
-    transparent 70%
-  );
-}
+/* The cursor light lives on .app (see index.css) so it can bleed over the
+   header and the side gutters instead of stopping at the hero box. */
 
 .copy,
 .stage {
