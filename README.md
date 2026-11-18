@@ -39,8 +39,11 @@ public/reels/offer.mp4   public/reels/offer.jpg
 - 9:16, 5–8 s, H.264 MP4, no audio, under about **2 MB each**.
 - The `.jpg` is the poster frame. The fold halves use it, and it stays up if the
   video cannot load or autoplay is blocked.
-- If a video is missing, unreadable or too slow to start (about 4 s), that panel
-  falls back to the drawn placeholder scene. The page never breaks.
+- If a video is missing or unreadable, that panel keeps the drawn placeholder
+  scene. A slow start (about 4 s) shows the placeholder once and then retries a
+  single time when that panel is on screen. The page never breaks.
+- The clip's length sets the cycle timing, clamped to 3–8 s. Without a clip the
+  original 3.8 s dwell is used.
 
 Compress a clip and pull a poster frame:
 

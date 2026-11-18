@@ -1,8 +1,9 @@
-import { useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { bookLink, LINKS } from '../../config'
 import { useCycle } from '../../hooks/useCycle'
 import { usePointerFx } from '../../hooks/usePointerFx'
 import { useReelNav } from '../../hooks/useReelNav'
+import type { CSSVars } from '../../types'
 import Reel from './Reel'
 import Wordmark from './Wordmark'
 import { REELS } from './reels'
@@ -17,10 +18,20 @@ export default function Hero() {
   const { current, select, next, prev, paused, setHovering, setFocusing } = useCycle(REELS.length)
   const swipe = useReelNav(heroRef, next, prev)
 
+  /* A real clip sets its own dwell (clamped in Reel.tsx). Stored per reel so a
+     switch applies the new length in the same render as the new `on` classes;
+     without one, the 3.8s token in index.css still drives the placeholders. */
+  const [durations, setDurations] = useState<Record<string, number | undefined>>({})
+  const setReelDuration = useCallback((id: string, seconds: number | null) => {
+    setDurations((d) => ({ ...d, [id]: seconds ?? undefined }))
+  }, [])
+  const dwell = durations[REELS[current].id]
+  const heroStyle: CSSVars | undefined = dwell === undefined ? undefined : { '--dwell': `${dwell}s` }
+
   usePointerFx(heroRef, deckRef)
 
   return (
-    <main ref={heroRef} className={paused ? 'hero paused' : 'hero'}>
+    <main ref={heroRef} className={paused ? 'hero paused' : 'hero'} style={heroStyle}>
       <div className="copy">
         <Wordmark text="framesnfold" />
 
@@ -95,6 +106,7 @@ export default function Hero() {
                 setHovering(false)
               }}
               onFocusChange={setFocusing}
+              onDuration={setReelDuration}
             />
           ))}
         </div>

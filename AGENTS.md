@@ -29,7 +29,7 @@
 - Avoid: generic photographer-template look, all-caps eyebrow labels, numbered markers, emoji, gradient hero, identical rounded cards.
 
 ## Behaviour (implemented)
-- One phrase, one panel and one progress bar are "on" at a time. The ember underline under the phrase runs for `--dwell`, and its `animationend` (name `dwell`) advances to the next reel. Pausing is done in CSS (`.paused` freezes the bar and the panel progress).
+- One phrase, one panel and one progress bar are "on" at a time. The ember underline under the phrase runs for `--dwell`, and its `animationend` (name `dwell`) advances to the next reel. `Hero.tsx` stores each real clip's `loadedmetadata` duration (clamped 3–8 s) and puts the active one on `.hero` as `--dwell`, so the underline, the panel progress bar and the clip share one length. Without real footage the 3.8 s token in `index.css` still applies. Pausing is done in CSS (`.paused` freezes the bar and the panel progress).
 - Selecting a reel: click/tap a panel, focus it, `←`/`→`, a horizontal wheel/trackpad gesture, or a horizontal swipe on the deck. Vertical scroll is never intercepted (no `preventDefault`), so the page stays free for the next section; `↑`/`↓` scroll the page. Hover only pauses/previews; it does not select, so panels never re-fan under the cursor. `useReelNav` owns wheel, keys and swipe.
 - Pause rules: hover pauses, and clicking a panel clears that pause so the chosen reel plays (the pointer is still over the deck, so it stays playing until it leaves and returns). Focus only pauses when it came from the keyboard (`:focus-visible`) — a click also focuses the button, and pausing on that froze the cycle until the user clicked elsewhere.
 - Panels are real `<button>`s with `aria-pressed`; the deck is a `role="group"` labelled "Sample reels". The hint under the deck tells people to swipe sideways or tap.
@@ -38,7 +38,7 @@
 - Active panel scales up and glows; inactive panels dim and freeze. Timecode counts from zero when a panel turns on and holds while paused. Scenes have per-scene motion (sun breathe, stamp, text up, tag in, HUD in) that only runs while that reel is on.
 - Page chrome: fixed film grain over everything, a cinema vignette behind the content, 1px frame lines at the app edges on desktop.
 - `prefers-reduced-motion`: no fold, no cycling, no grain, no pointer effects, no scene motion, static progress.
-- Reels: a single `<video muted loop playsInline preload poster aria-hidden disablePictureInPicture>` sits under the drawn scene inside the active panel. Only the active reel plays; `currentTime` resets when a reel turns on; hover/keyboard pause pauses it too. It shows once `loadeddata` fires and stays behind the drawn scene until then, so a missing, broken or slow clip (about 4 s) falls back to the placeholder for good. The fold halves never get their own video — they use the poster JPEG, sized `200% 100%` and offset like `.l .s`/`.r .s`, so the crease cannot drift. Active + next preload `auto`, the third `metadata`.
+- Reels: a single `<video muted loop playsInline preload poster aria-hidden disablePictureInPicture>` sits under the drawn scene inside the active panel. Only the active reel plays; `currentTime` resets when a reel turns on; hover/keyboard pause pauses it too. It shows once `loadeddata` fires and stays behind the drawn scene until then. A tap calls `play()` directly in the click handler (React's effect is too late for iOS's gesture rule). A stalled load times out after 4 s and falls back, but gets **one** retry when that reel is active: `el.load()` on the same element, so no second video and no poster flicker. An `error` event (404, bad codec) is permanent and never retries; a second timeout also sticks. The video element stays mounted after failure so the retry can reload it. The fold halves never get their own video — they use the poster JPEG, sized `200% 100%` and offset like `.l .s`/`.r .s`, so the crease cannot drift. Active + next preload `auto`, the third `metadata`.
 - Wordmark: `h1` with `aria-label`, letters `aria-hidden`. The pitch has a screen-reader-only full sentence.
 - Accounts and the booking destination live in `src/config.ts` (`LINKS`, `bookLink()`). The ghost CTA says "Book a reel on WhatsApp" and opens `wa.me` once `whatsappNumber` is set; until then it says "Book a reel on Instagram" and opens `ig.me/m/framesnfold`.
 - Link preview: `index.html` carries OG/Twitter/canonical tags pointing at `https://framesnfold.vercel.app/`, with `public/og.png` (1200×630, ink background, ember accent).
@@ -60,8 +60,8 @@ src/hooks/useReducedMotion.ts
 src/hooks/useHideOnScroll.ts   sticky bar: hidden on scroll down, stuck backdrop
 src/components/Header/         Header.tsx, Header.css (wordmark + mark, icon links, sticky)
 src/components/Hero/
-  Hero.tsx, Hero.css           layout, cycle wiring, deck, all hero styles
-  Reel.tsx                     one folding panel: video, status/fallback, fold halves
+  Hero.tsx, Hero.css           layout, cycle wiring, per-reel --dwell, deck, all hero styles
+  Reel.tsx                     one folding panel: video, duration, retry, fold halves
   scenes.tsx                   3 placeholder scenes drawn in CSS ("Sample frame")
   reels.tsx                    REELS array, order = cycle order, video paths
   Wordmark.tsx                 letter rise + cursor proximity
@@ -76,6 +76,8 @@ Scenes use container query units (`cqw`) so they scale with panel width.
 - Buttons verified static: pointermove leaves `transform: none` and sets no `--bx/--by`; on hover the button stays put and the `↗` computes to `translate(3px, -3px)`.
 - Pause/resume verified: pointerenter on the deck adds `.paused` and the timecode holds; a click while the pointer stays on the deck removes `.paused` and the count runs again (2.73s in 3s); keyboard focus pauses and blur resumes. The old bug was `onFocus` pausing for mouse clicks too, leaving `focusing` true until the user clicked away.
 - Reel playback verified with generated 9:16 test clips: only the active panel plays, click/`ArrowRight`/swipe/horizontal wheel switch and reset to 0, hover holds and leaving resumes, a missing `shop.mp4` fell back to the drawn scene with no console errors.
+- Dwell verified with generated 4 s and 7 s clips: a 4.046 s clip set `--dwell: 4.0457s` on `.hero`, and both the phrase underline and the panel progress computed to `4.0457s`; a 7.057 s clip set `7.0568s` everywhere; the missing reel kept `3.8s`. Re-switching applied the stored length in the same render as the new `on` classes. The bars can start slightly before the video finishes decoding in this in-app browser (~1.4 s on a 4 s clip there), so the ends are not frame-perfect in that environment; real hardware should be much closer.
+- Retry verified with a local server that stalled requests: at ~4 s the panel showed the placeholder, then one `emptied` event from `el.load()` was followed by `loadedmetadata`/`loadeddata` and playback. With every request stalled there was still exactly one `emptied` after 9.5 s (no second retry). A 404 fired `error` once, never retried, and kept the placeholder. The clips, server script and temporary src were removed.
 - Booking verified both ways: with `whatsappNumber` empty the ghost CTA reads "Book a reel on Instagram" → `https://ig.me/m/framesnfold`; with a number set (spaces allowed, stripped to digits) it reads "Book a reel on WhatsApp" → `https://wa.me/<digits>?text=<encoded message>`. Numbers are never hardcoded in components. The test number was reverted to `''`.
 - Link preview verified: tags parse in `index.html`, `public/og.png` is exactly 1200×630 and 64 KB (ink `#0e0d0c` background, cream wordmark, ember rule and mark).
 - Still worth checking on a real phone: fold animation (3D, `backface-visibility`), tilt feel, letter effect, anything clipped.
@@ -91,6 +93,7 @@ public/reels/offer.mp4  public/reels/offer.jpg
 ```
 
 9:16, H.264, no audio, roughly 2 MB each. README has the ffmpeg commands. No code change is needed.
+The clip length drives `--dwell`, clamped to 3–8 s (a 9 s reel dwells 8 s). Clips shorter than 3 s hold for 3 s; the HUD timecode is its own 30 fps count.
 
 ## Next steps
 1. Review on a real phone (fold, tilt, small-screen spacing), then fix what looks off.
