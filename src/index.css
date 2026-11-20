@@ -1,17 +1,5 @@
-/* Design tokens and page foundation. One dark look by choice. */
 :root {
-  --ink: #0e0d0c;
-  --paper: #f2ede6;
-  --ember: #ff5a1f;
-  --ember-deep: #c9360a;
-  --mute: #aaa299;
-  --line: rgba(242, 237, 230, 0.14);
-  --glass: rgba(14, 13, 12, 0.72);
-  --glass-solid: #171513;
-  --glass-blur: 18px;
-  --dwell: 3.8s;
-  --f-display: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
-  --f-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: system-ui, sans-serif;
   color-scheme: dark;
 }
 
@@ -19,103 +7,8 @@
   box-sizing: border-box;
 }
 
-html {
-  background: var(--ink);
-}
-
-/* Anchors glide only when the visitor has not asked for less motion. */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
-
 body {
   margin: 0;
-  min-height: 100%;
-  overflow-x: hidden;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--f-body);
-  font-size: 16px;
-  line-height: 1.55;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
-
-::selection {
-  background: var(--ember);
-  color: var(--ink);
-}
-
-a {
-  color: inherit;
-}
-
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--ember);
-  outline-offset: 3px;
-}
-
-.sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-#root {
-  min-height: 100svh;
-}
-
-/* Normal flow: the hero is one viewport, everything below scrolls past the
-   floating pill. --bar-h is the pill's measured height, published by
-   useHeaderHeight, and is used for hero clearance and anchor offsets. */
-.app {
-  --bar-h: 64px;
-  position: relative;
-  max-width: 1280px;
-  margin-inline: auto;
-}
-
-.app > * {
-  position: relative;
-  z-index: 1;
-}
-
-.app > .bg-layer {
-  position: fixed;
-  z-index: 0;
-}
-
-.section {
-  position: relative;
-  z-index: 1;
-  padding-block: clamp(3.5rem, 9vh, 7rem);
-  scroll-margin-top: calc(var(--bar-h) + 2.75rem);
-}
-
-.section h2 {
-  margin: 0 0 1rem;
-  font-family: var(--f-display);
-  font-weight: 900;
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  line-height: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
+  min-width: 320px;
+  min-height: 100vh;
 }
