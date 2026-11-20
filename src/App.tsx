@@ -4,11 +4,12 @@ import Dust from './components/Dust'
 import Icon from './components/Icon'
 import Monogram from './components/Monogram'
 import { HERO_IMAGE, LINKS, PROJECTS, SERVICES } from './data/site'
-import { LAYER_STOPS, cardStops, sampleLayer, serviceStops } from './motion'
+import { LAYER_STOPS, cardStops, ringStops, sampleLayer, serviceStops } from './motion'
 import type { MotionStop } from './motion'
 import './App.css'
 
 function stopsFor(key: string): MotionStop[] | undefined {
+  if (key === 'work-ring') return ringStops()
   if (key.startsWith('card-')) return cardStops(Number(key.slice(5)))
   if (key.startsWith('service-')) return serviceStops(Number(key.slice(8)))
   return LAYER_STOPS[key]
@@ -38,7 +39,12 @@ export default function App() {
           `rotateX(${state.rx.toFixed(2)}deg) rotateY(${state.ry.toFixed(2)}deg) ` +
           `rotateZ(${state.rz.toFixed(2)}deg) scale(${state.scale.toFixed(3)})`
         layer.style.opacity = state.opacity.toFixed(3)
-        layer.style.filter = state.blur > 0.01 ? `blur(${state.blur.toFixed(2)}px)` : 'none'
+        const filters: string[] = []
+        if (state.blur > 0.01) filters.push(`blur(${state.blur.toFixed(2)}px)`)
+        if (Math.abs(state.brightness - 1) > 0.01) {
+          filters.push(`brightness(${state.brightness.toFixed(3)})`)
+        }
+        layer.style.filter = filters.join(' ') || 'none'
         layer.style.pointerEvents = state.opacity > 0.6 ? 'auto' : 'none'
       }
 
@@ -126,7 +132,7 @@ export default function App() {
               <p className="kicker">02 / Portfolio</p>
               <h2 className="work-title" id="work-title">Selected work</h2>
             </div>
-            <div className="work-grid">
+            <div className="work-grid" data-layer="work-ring">
               {PROJECTS.map((project, index) => (
                 <a
                   key={project.id}

@@ -8,6 +8,7 @@ export type LayerState = {
   scale: number
   opacity: number
   blur: number
+  brightness: number
 }
 
 export type MotionStop = Partial<LayerState> & { at: number }
@@ -22,6 +23,7 @@ const BASE: LayerState = {
   scale: 1,
   opacity: 1,
   blur: 0,
+  brightness: 1,
 }
 
 const lerp = (from: number, to: number, t: number) => from + (to - from) * t
@@ -38,6 +40,7 @@ function stateAt(stop: MotionStop): LayerState {
     scale: stop.scale ?? BASE.scale,
     opacity: stop.opacity ?? BASE.opacity,
     blur: stop.blur ?? BASE.blur,
+    brightness: stop.brightness ?? BASE.brightness,
   }
 }
 
@@ -66,6 +69,7 @@ export function sampleLayer(stops: MotionStop[], progress: number): LayerState {
         scale: lerp(from.scale, to.scale, t),
         opacity: lerp(from.opacity, to.opacity, t),
         blur: lerp(from.blur, to.blur, t),
+        brightness: lerp(from.brightness, to.brightness, t),
       }
     }
   }
@@ -131,51 +135,109 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
   ],
 }
 
-export function cardStops(index: number): MotionStop[] {
+type OrbitGeometry = {
+  width: number
+  columns: number
+  baseX: (index: number) => number
+  baseY: (index: number) => number
+  lineSpacing: number
+  lineScale: number
+  ellipseScale: number
+  radiusX: number
+  radiusZ: number
+  tilt: number
+  centerRight: number
+  centerLeft: number
+  lineLeft: number
+}
+
+function orbitGeometry(): OrbitGeometry {
   const width = typeof window === 'undefined' ? 1440 : window.innerWidth
   const height = typeof window === 'undefined' ? 900 : window.innerHeight
   const columns = width <= 700 ? 2 : 3
   const rows = Math.ceil(6 / columns)
-  const column = index % columns
-  const row = Math.floor(index / columns)
   const wrapWidth = Math.min(width * 0.92, width - 48, 1100)
   const gap = Math.min(20, Math.max(10, width * 0.015))
   const cardWidth = (wrapWidth - gap * (columns - 1)) / columns
   const cardHeight = cardWidth * (9 / 16)
-  const baseX = (column - (columns - 1) / 2) * (cardWidth + gap)
-  const baseY = (row - (rows - 1) / 2) * (cardHeight + gap)
   const stride = cardWidth + gap
   const lineSpacing = Math.min(width * 0.16, stride * 0.62)
   const lineScale = Math.min(1, lineSpacing / stride)
   const ellipseScale = Math.min(0.78, Math.max(0.42, lineScale * 1.15))
-  const radiusX = Math.min(width * 0.26, height * 0.42, 340)
-  const radiusY = radiusX * 0.42
-  const halfEllipseCard = (cardWidth * ellipseScale) / 2
-  const rightLimit = width / 2 - radiusX - halfEllipseCard - 18
-  const centerRight = Math.max(width * 0.04, Math.min(width * 0.2, rightLimit))
-  const centerLeft = -Math.min(width * 0.14, radiusX * 0.7)
-  const lineLeft = -Math.min(width * 0.18, radiusX * 0.85)
+  const radiusX = Math.min(width * 0.27, height * 0.42, 340)
+  const radiusZ = Math.min(radiusX * 0.5, height * 0.3, 190)
+  const tilt = -58
+  const halfCard = (cardWidth * ellipseScale) / 2
+  const rightLimit = width / 2 - radiusX - halfCard - 16
+  const centerRight = Math.max(width * 0.06, Math.min(width * 0.2, rightLimit))
+  const centerLeft = -Math.min(width * 0.14, radiusX * 0.62)
+  const lineLeft = -Math.min(width * 0.16, radiusX * 0.7)
+
+  return {
+    width,
+    columns,
+    baseX: (index) => ((index % columns) - (columns - 1) / 2) * stride,
+    baseY: (index) => (Math.floor(index / columns) - (rows - 1) / 2) * (cardHeight + gap),
+    lineSpacing,
+    lineScale,
+    ellipseScale,
+    radiusX,
+    radiusZ,
+    tilt,
+    centerRight,
+    centerLeft,
+    lineLeft,
+  }
+}
+
+export function ringStops(): MotionStop[] {
+  const { centerRight, centerLeft, tilt } = orbitGeometry()
+  return [
+    { at: 0, x: 0, rx: 0 },
+    { at: 0.2, x: 0, rx: 0 },
+    { at: 0.235, x: centerRight * 0.45, rx: tilt * 0.45 },
+    { at: 0.27, x: centerRight, rx: tilt },
+    { at: 0.34, x: centerLeft, rx: tilt },
+    { at: 0.415, x: 0, rx: 0 },
+    { at: 1, x: 0, rx: 0 },
+  ]
+}
+
+export function cardStops(index: number): MotionStop[] {
+  const geo = orbitGeometry()
   const angle = (240 + index * 60) * (Math.PI / 180)
-  const tx = (x: number) => x - baseX
-  const ty = (y: number) => y - baseY
+  const sin = Math.sin(angle)
+  const cos = Math.cos(angle)
+  const tx = (x: number) => x - geo.baseX(index)
+  const ty = (y: number) => y - geo.baseY(index)
+  const lineX = (centerX: number) => centerX + (index - 2.5) * geo.lineSpacing
 
-  const ellipsePoint = (centerX: number, rx: number, ry: number, tilt: number) => ({
-    x: centerX + Math.cos(angle) * rx,
-    y: Math.sin(angle) * ry,
-    rx: tilt,
-    ry: Math.cos(angle) * 10,
-    rz: Math.sin(angle) * 9,
-  })
+  // The orbit lies on a tilted X/Z plane. The ring parent applies the tilt;
+  // these are the card positions on that plane before projection.
+  const orbitX = cos * geo.radiusX
+  const orbitZ = sin * geo.radiusZ
+  const orbit = {
+    x: tx(orbitX),
+    y: ty(0),
+    z: orbitZ,
+    rx: 34 + sin * 4,
+    ry: -cos * 14,
+    rz: sin * 5,
+    scale: geo.ellipseScale * (1 + sin * 0.08),
+    brightness: 1 + sin * 0.18,
+  }
 
-  const ellipseRight = ellipsePoint(centerRight, radiusX, radiusY, 16)
-  const ellipseLeft = ellipsePoint(centerLeft, radiusX, radiusY, 16)
-  const ellipseCurl = ellipsePoint(
-    (lineLeft + centerRight) / 2,
-    radiusX * 0.72,
-    radiusY * 0.55,
-    9,
-  )
-  const lineX = (centerX: number) => centerX + (index - 2.5) * lineSpacing
+  const curl = {
+    x: tx(orbitX * 0.72),
+    y: ty(0),
+    z: orbitZ * 0.55,
+    rx: orbit.rx * 0.5,
+    ry: orbit.ry * 0.5,
+    rz: orbit.rz * 0.5,
+    scale: ((geo.lineScale + geo.ellipseScale) / 2) * (1 + sin * 0.04),
+    brightness: 1 + sin * 0.09,
+  }
+
   const peelStart = 0.345 + index * 0.008
   const peelEnd = 0.415 + index * 0.006
 
@@ -188,6 +250,7 @@ export function cardStops(index: number): MotionStop[] {
       scale: 0.34 + index * 0.018,
       opacity: 0,
       blur: 22,
+      brightness: 0.7 + index * 0.05,
     },
     {
       at: 0.08,
@@ -197,57 +260,66 @@ export function cardStops(index: number): MotionStop[] {
       scale: 0.46 + index * 0.012,
       opacity: 0.7 + index * 0.05,
       blur: 12,
-    },
-    { at: 0.14, x: tx(lineX(0)), y: ty(0), z: -260, scale: lineScale, opacity: 1, blur: 0 },
-    { at: 0.2, x: tx(lineX(lineLeft)), y: ty(0), z: -220, scale: lineScale, opacity: 1 },
-    {
-      at: 0.235,
-      x: tx(ellipseCurl.x),
-      y: ty(ellipseCurl.y),
-      z: -140,
-      rx: ellipseCurl.rx,
-      ry: ellipseCurl.ry,
-      rz: ellipseCurl.rz,
-      scale: (lineScale + ellipseScale) / 2,
-      opacity: 1,
+      brightness: 0.9 + index * 0.015,
     },
     {
-      at: 0.27,
-      x: tx(ellipseRight.x),
-      y: ty(ellipseRight.y),
-      z: -90,
-      rx: ellipseRight.rx,
-      ry: ellipseRight.ry,
-      rz: ellipseRight.rz,
-      scale: ellipseScale,
+      at: 0.14,
+      x: tx(lineX(0)),
+      y: ty(0),
+      z: -260,
+      scale: geo.lineScale,
       opacity: 1,
+      blur: 0,
+      brightness: 1,
     },
     {
-      at: 0.34,
-      x: tx(ellipseLeft.x),
-      y: ty(ellipseLeft.y),
-      z: -90,
-      rx: ellipseLeft.rx,
-      ry: ellipseLeft.ry,
-      rz: ellipseLeft.rz,
-      scale: ellipseScale,
+      at: 0.2,
+      x: tx(lineX(geo.lineLeft)),
+      y: ty(0),
+      z: -220,
+      scale: geo.lineScale,
       opacity: 1,
+      brightness: 1,
+    },
+    { at: 0.235, ...curl, opacity: 1 },
+    { at: 0.27, ...orbit, opacity: 1 },
+    // Local orbit values stay identical through the sweep: the ring parent
+    // translates the whole tilted X/Z system from right to left.
+    { at: 0.34, ...orbit, opacity: 1 },
+    { at: peelStart, ...orbit, opacity: 1 },
+    {
+      at: peelEnd,
+      x: 0,
+      y: 0,
+      z: 0,
+      rx: 0,
+      ry: 0,
+      rz: 0,
+      scale: 1,
+      opacity: 1,
+      brightness: 1,
+    },
+    { at: 0.45, x: 0, y: 0, z: 0, scale: 1, opacity: 1, brightness: 1 },
+    {
+      at: 0.58,
+      x: 0,
+      y: -46,
+      z: 300 + index * 20,
+      scale: 1.1,
+      opacity: 0,
+      blur: 10,
+      brightness: 1,
     },
     {
-      at: peelStart,
-      x: tx(ellipseLeft.x),
-      y: ty(ellipseLeft.y),
-      z: -90,
-      rx: ellipseLeft.rx,
-      ry: ellipseLeft.ry,
-      rz: ellipseLeft.rz,
-      scale: ellipseScale,
-      opacity: 1,
+      at: 1,
+      x: 0,
+      y: -46,
+      z: 300 + index * 20,
+      scale: 1.1,
+      opacity: 0,
+      blur: 10,
+      brightness: 1,
     },
-    { at: peelEnd, x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, scale: 1, opacity: 1 },
-    { at: 0.45, x: 0, y: 0, z: 0, scale: 1, opacity: 1 },
-    { at: 0.58, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
-    { at: 1, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
   ]
 }
 

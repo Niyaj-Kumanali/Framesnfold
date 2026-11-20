@@ -499,6 +499,14 @@ body {
   width: min(92vw, calc(100vw - 48px), 1100px);
 }
 
+.layer--work,
+.work-wrap,
+.work-grid,
+.work-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
 .work-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
