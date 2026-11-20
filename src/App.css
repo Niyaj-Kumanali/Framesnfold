@@ -414,7 +414,7 @@ body {
   height: 100%;
   max-width: none;
   transform: translateX(-50%);
-  filter: brightness(1.02) contrast(1.04) saturate(1.03);
+  filter: contrast(1.04) saturate(1.03);
 }
 
 .portrait-halo {
@@ -463,14 +463,16 @@ body {
   mix-blend-mode: screen;
   opacity: 0.92;
   transform: translateX(-50%);
-  -webkit-mask-image: var(--portrait-image);
-  mask-image: var(--portrait-image);
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
+  -webkit-mask-image: var(--portrait-image), var(--portrait-image);
+  mask-image: var(--portrait-image), var(--portrait-image);
+  -webkit-mask-size: 100% 100%, 98% 98%;
+  mask-size: 100% 100%, 98% 98%;
+  -webkit-mask-position: center, center;
+  mask-position: center, center;
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
   pointer-events: none;
 }
 
