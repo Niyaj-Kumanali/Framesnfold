@@ -95,24 +95,24 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
   work: [
     { at: 0, z: -520, y: 44, scale: 0.9, opacity: 0, blur: 10 },
     { at: 0.12, z: 0, y: 0, scale: 1, opacity: 1, blur: 0 },
-    { at: 0.42, z: 0, y: 0, scale: 1, opacity: 1 },
-    { at: 0.48, z: 260, y: -40, opacity: 0, blur: 10 },
+    { at: 0.5, z: 0, y: 0, scale: 1, opacity: 1 },
+    { at: 0.58, z: 260, y: -40, opacity: 0, blur: 10 },
     { at: 1, z: 260, y: -40, opacity: 0, blur: 10 },
   ],
   'work-heading': [
     { at: 0, y: 28, opacity: 0, blur: 8 },
-    { at: 0.3, y: 28, opacity: 0, blur: 8 },
-    { at: 0.36, y: 0, opacity: 1, blur: 0 },
-    { at: 0.42, y: 0, opacity: 1 },
-    { at: 0.48, y: -24, opacity: 0, blur: 8 },
+    { at: 0.45, y: 28, opacity: 0, blur: 8 },
+    { at: 0.51, y: 0, opacity: 1, blur: 0 },
+    { at: 0.54, y: 0, opacity: 1 },
+    { at: 0.58, y: -24, opacity: 0, blur: 8 },
     { at: 1, y: -24, opacity: 0, blur: 8 },
   ],
   closeup: [
     { at: 0, z: -1200, x: 80, scale: 0.7, opacity: 0, blur: 16 },
-    { at: 0.34, z: -700, x: 60, scale: 0.8, opacity: 0, blur: 12 },
-    { at: 0.45, z: 0, x: 0, scale: 1, opacity: 1, blur: 0 },
-    { at: 0.56, z: 60, x: 0, scale: 1.04, opacity: 1 },
-    { at: 0.7, z: 460, x: -90, scale: 1.14, opacity: 0, blur: 14 },
+    { at: 0.52, z: -700, x: 60, scale: 0.8, opacity: 0, blur: 12 },
+    { at: 0.6, z: 0, x: 0, scale: 1, opacity: 1, blur: 0 },
+    { at: 0.62, z: 60, x: 0, scale: 1.04, opacity: 1 },
+    { at: 0.74, z: 460, x: -90, scale: 1.14, opacity: 0, blur: 14 },
     { at: 1, z: 460, x: -90, scale: 1.14, opacity: 0, blur: 14 },
   ],
   services: [
@@ -147,85 +147,106 @@ export function cardStops(index: number): MotionStop[] {
   const stride = cardWidth + gap
   const lineSpacing = Math.min(width * 0.16, stride * 0.62)
   const lineScale = Math.min(1, lineSpacing / stride)
-  const lineOffX = -width * 0.95 + index * lineSpacing
-  const lineOnX = (index - 2.5) * lineSpacing
-  const tx = (targetX: number) => targetX - baseX
-  const ty = (targetY: number) => targetY - baseY
-  const radius = Math.min(width * 0.22, height * 0.32, 260)
+  const ellipseScale = Math.min(0.78, Math.max(0.42, lineScale * 1.15))
+  const radiusX = Math.min(width * 0.26, height * 0.42, 340)
+  const radiusY = radiusX * 0.42
+  const halfEllipseCard = (cardWidth * ellipseScale) / 2
+  const rightLimit = width / 2 - radiusX - halfEllipseCard - 18
+  const centerRight = Math.max(width * 0.04, Math.min(width * 0.2, rightLimit))
+  const centerLeft = -Math.min(width * 0.14, radiusX * 0.7)
+  const lineLeft = -Math.min(width * 0.18, radiusX * 0.85)
+  const angle = (240 + index * 60) * (Math.PI / 180)
+  const tx = (x: number) => x - baseX
+  const ty = (y: number) => y - baseY
 
-  const circle = (offsetDeg: number, centerX: number) => {
-    const degrees = index * 60 + offsetDeg
-    const radians = (degrees - 90) * (Math.PI / 180)
-    return {
-      x: centerX + Math.cos(radians) * radius,
-      y: Math.sin(radians) * radius * 0.48,
-      rz: degrees * 0.35,
-    }
-  }
+  const ellipsePoint = (centerX: number, rx: number, ry: number, tilt: number) => ({
+    x: centerX + Math.cos(angle) * rx,
+    y: Math.sin(angle) * ry,
+    rx: tilt,
+    ry: Math.cos(angle) * 10,
+    rz: Math.sin(angle) * 9,
+  })
 
-  const circleRight = circle(0, width * 0.22)
-  const circleLeft = circle(-60, -width * 0.05)
+  const ellipseRight = ellipsePoint(centerRight, radiusX, radiusY, 16)
+  const ellipseLeft = ellipsePoint(centerLeft, radiusX, radiusY, 16)
+  const ellipseCurl = ellipsePoint(
+    (lineLeft + centerRight) / 2,
+    radiusX * 0.72,
+    radiusY * 0.55,
+    9,
+  )
+  const lineX = (centerX: number) => centerX + (index - 2.5) * lineSpacing
+  const peelStart = 0.345 + index * 0.008
+  const peelEnd = 0.415 + index * 0.006
 
   return [
     {
       at: 0,
       x: tx(0),
       y: ty(0),
-      z: -1800 - index * 50,
-      scale: 0.38,
+      z: -1850 + index * 55,
+      scale: 0.34 + index * 0.018,
       opacity: 0,
       blur: 22,
     },
     {
       at: 0.08,
-      x: tx((index - 2.5) * 18),
+      x: tx(0),
       y: ty(0),
-      z: -950 - index * 30,
-      scale: 0.45,
-      opacity: 0.25,
-      blur: 14,
+      z: -1050 + index * 35,
+      scale: 0.46 + index * 0.012,
+      opacity: 0.7 + index * 0.05,
+      blur: 12,
     },
+    { at: 0.14, x: tx(lineX(0)), y: ty(0), z: -260, scale: lineScale, opacity: 1, blur: 0 },
+    { at: 0.2, x: tx(lineX(lineLeft)), y: ty(0), z: -220, scale: lineScale, opacity: 1 },
     {
-      at: 0.14,
-      x: tx(lineOffX),
-      y: ty(0),
-      z: -320,
-      scale: lineScale * 0.9,
-      opacity: 1,
-      blur: 5,
-    },
-    {
-      at: 0.19,
-      x: tx(lineOnX),
-      y: ty(0),
-      z: -180,
-      scale: lineScale,
-      opacity: 1,
-      blur: 0,
-    },
-    {
-      at: 0.23,
-      x: tx(circleRight.x),
-      y: ty(circleRight.y),
-      z: -60,
-      rx: 58,
-      rz: circleRight.rz,
-      scale: 0.8,
+      at: 0.235,
+      x: tx(ellipseCurl.x),
+      y: ty(ellipseCurl.y),
+      z: -140,
+      rx: ellipseCurl.rx,
+      ry: ellipseCurl.ry,
+      rz: ellipseCurl.rz,
+      scale: (lineScale + ellipseScale) / 2,
       opacity: 1,
     },
     {
-      at: 0.29,
-      x: tx(circleLeft.x),
-      y: ty(circleLeft.y),
-      z: -60,
-      rx: 58,
-      rz: circleLeft.rz,
-      scale: 0.8,
+      at: 0.27,
+      x: tx(ellipseRight.x),
+      y: ty(ellipseRight.y),
+      z: -90,
+      rx: ellipseRight.rx,
+      ry: ellipseRight.ry,
+      rz: ellipseRight.rz,
+      scale: ellipseScale,
       opacity: 1,
     },
-    { at: 0.35, x: 0, y: 0, z: 0, rx: 0, rz: 0, scale: 1, opacity: 1 },
-    { at: 0.42, x: 0, y: 0, z: 0, scale: 1, opacity: 1 },
-    { at: 0.48, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
+    {
+      at: 0.34,
+      x: tx(ellipseLeft.x),
+      y: ty(ellipseLeft.y),
+      z: -90,
+      rx: ellipseLeft.rx,
+      ry: ellipseLeft.ry,
+      rz: ellipseLeft.rz,
+      scale: ellipseScale,
+      opacity: 1,
+    },
+    {
+      at: peelStart,
+      x: tx(ellipseLeft.x),
+      y: ty(ellipseLeft.y),
+      z: -90,
+      rx: ellipseLeft.rx,
+      ry: ellipseLeft.ry,
+      rz: ellipseLeft.rz,
+      scale: ellipseScale,
+      opacity: 1,
+    },
+    { at: peelEnd, x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, scale: 1, opacity: 1 },
+    { at: 0.45, x: 0, y: 0, z: 0, scale: 1, opacity: 1 },
+    { at: 0.58, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
     { at: 1, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
   ]
 }
