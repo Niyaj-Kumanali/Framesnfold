@@ -95,9 +95,6 @@ export default function App() {
                 Turning raw footage into sharp reels, edits and shoots that move people.
               </p>
               <div className="hero-actions">
-                <a className="cta cta--primary" href="#" aria-label="View my resume — placeholder link">
-                  <Icon className="cta-icon" name="briefcase" /> VIEW MY RESUME
-                </a>
                 <a
                   className="cta cta--secondary"
                   href={LINKS.dm}

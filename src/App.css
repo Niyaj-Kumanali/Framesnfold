@@ -6,8 +6,8 @@
   --paper: #f3ede6;
   --mute: #a89b94;
   --line: rgba(255, 90, 31, 0.2);
-  --f-display: 'Anton', 'Arial Narrow', sans-serif;
-  --f-hero: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
+  --f-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --f-ui: 'Instrument Sans', 'DM Sans', system-ui, sans-serif;
   --f-body: 'DM Sans', system-ui, sans-serif;
   color-scheme: dark;
 }
@@ -102,19 +102,22 @@ body {
 .kicker {
   margin: 0 0 12px;
   color: var(--ember);
-  font-size: clamp(0.62rem, 1vw, 0.72rem);
-  letter-spacing: 0.24em;
+  font-family: var(--f-ui);
+  font-size: clamp(0.62rem, 0.9vw, 0.7rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .work-title {
   margin: 0 0 clamp(18px, 3vh, 32px);
   color: var(--paper);
-  font-family: var(--f-hero);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 3.5vw, 3.1rem);
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
 }
 
@@ -235,8 +238,11 @@ body {
   display: inline-flex;
   align-items: center;
   color: rgba(243, 237, 230, 0.52);
-  font-size: clamp(0.54rem, 0.75vw, 0.66rem);
-  letter-spacing: 0.22em;
+  font-family: var(--f-ui);
+  font-size: clamp(0.56rem, 0.8vw, 0.66rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   pointer-events: none;
 }
@@ -284,21 +290,22 @@ body {
 .hero-identity {
   margin: 0 0 26px;
   color: var(--ember);
-  font-family: var(--f-hero);
-  font-size: clamp(0.62rem, 0.9vw, 0.76rem);
+  font-family: var(--f-ui);
+  font-size: clamp(0.62rem, 0.85vw, 0.72rem);
   font-weight: 600;
-  letter-spacing: 0.22em;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .title-inner h1 {
   margin: 0;
   color: #f6f4f2;
-  font-family: var(--f-hero);
-  font-size: clamp(3.4rem, 6.2vw, 5.1rem);
+  font-family: var(--f-display);
+  font-size: clamp(3.6rem, 6.8vw, 5.75rem);
   font-weight: 700;
-  line-height: 0.92;
-  letter-spacing: -0.045em;
+  line-height: 0.86;
+  letter-spacing: -0.015em;
   text-transform: uppercase;
   text-shadow: 0 18px 70px rgba(0, 0, 0, 0.62);
 }
@@ -309,24 +316,28 @@ body {
   gap: clamp(10px, 1.4vw, 18px);
   margin: 26px 0 0;
   color: #e7e3df;
-  font-family: var(--f-hero);
-  font-size: clamp(0.86rem, 1.25vw, 1rem);
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  font-family: var(--f-ui);
+  font-size: clamp(0.82rem, 1.15vw, 0.94rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
 }
 
 .hero-capabilities i {
   color: var(--ember);
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .hero-description {
   max-width: 430px;
   margin: 20px 0 0;
   color: #d0d0d0;
-  font-size: clamp(1rem, 1.35vw, 1.18rem);
-  line-height: 1.6;
+  font-family: var(--f-body);
+  font-size: clamp(0.98rem, 1.3vw, 1.12rem);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0;
 }
 
 .hero-actions {
@@ -345,10 +356,11 @@ body {
   padding: 0 26px;
   border-radius: 999px;
   color: var(--paper);
-  font-family: var(--f-hero);
-  font-size: 0.78rem;
+  font-family: var(--f-ui);
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  line-height: 1;
+  letter-spacing: 0.12em;
   text-decoration: none;
   text-transform: uppercase;
   transition:
@@ -541,16 +553,21 @@ body {
   top: clamp(10px, 1.4vw, 18px);
   left: clamp(12px, 1.6vw, 22px);
   color: var(--ember);
-  font-size: clamp(0.6rem, 1vw, 0.72rem);
-  letter-spacing: 0.2em;
+  font-family: var(--f-ui);
+  font-size: clamp(0.58rem, 0.9vw, 0.68rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
 }
 
 .card-title {
   position: relative;
   z-index: 1;
   font-family: var(--f-display);
-  font-size: clamp(1.1rem, 2.4vw, 2.1rem);
-  line-height: 1;
+  font-size: clamp(1.2rem, 2.2vw, 1.9rem);
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: 0.005em;
   text-transform: uppercase;
 }
 
@@ -559,7 +576,8 @@ body {
   right: clamp(12px, 1.6vw, 22px);
   bottom: clamp(12px, 1.6vw, 22px);
   color: var(--mute);
-  font-size: 0.9rem;
+  font-family: var(--f-ui);
+  font-size: 0.85rem;
 }
 
 .work-card:hover .card-arrow,
@@ -614,8 +632,11 @@ body {
   right: 22px;
   bottom: 20px;
   color: var(--mute);
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
+  font-family: var(--f-ui);
+  font-size: 0.64rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
 }
 
 .closeup-copy {
@@ -628,9 +649,10 @@ body {
 .closeup-copy h2 {
   margin: 0;
   font-family: var(--f-display);
-  font-size: clamp(2.2rem, 5vw, 4.6rem);
-  font-weight: 400;
-  line-height: 0.95;
+  font-size: clamp(2.3rem, 4.8vw, 4.2rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.005em;
   text-transform: uppercase;
 }
 
@@ -638,8 +660,11 @@ body {
   max-width: 34ch;
   margin: 18px 0 0;
   color: var(--mute);
-  font-size: clamp(0.85rem, 1.4vw, 1rem);
-  line-height: 1.6;
+  font-family: var(--f-body);
+  font-size: clamp(0.84rem, 1.3vw, 0.96rem);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0;
 }
 
 .services-grid {
@@ -661,16 +686,20 @@ body {
 
 .service-index {
   color: var(--ember);
-  font-size: clamp(0.62rem, 1vw, 0.72rem);
-  letter-spacing: 0.22em;
+  font-family: var(--f-ui);
+  font-size: clamp(0.62rem, 0.9vw, 0.7rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
 }
 
 .service-panel h3 {
   margin: clamp(24px, 5vh, 48px) 0 12px;
   font-family: var(--f-display);
-  font-size: clamp(1.8rem, 4vw, 3.4rem);
-  font-weight: 400;
-  line-height: 1;
+  font-size: clamp(1.9rem, 3.6vw, 3.1rem);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: 0.005em;
   text-transform: uppercase;
 }
 
@@ -678,8 +707,11 @@ body {
   max-width: 28ch;
   margin: 0;
   color: var(--mute);
+  font-family: var(--f-body);
   font-size: clamp(0.82rem, 1.3vw, 0.95rem);
-  line-height: 1.55;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0;
 }
 
 .contact-inner {
@@ -697,9 +729,10 @@ body {
 .contact-inner h2 {
   margin: 0;
   font-family: var(--f-display);
-  font-size: clamp(2.6rem, 7vw, 6.4rem);
-  font-weight: 400;
-  line-height: 0.92;
+  font-size: clamp(2.4rem, 6.2vw, 5.4rem);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
 }
 
@@ -707,8 +740,11 @@ body {
   margin: clamp(14px, 2vh, 24px) auto 0;
   max-width: 42ch;
   color: var(--mute);
-  font-size: clamp(0.85rem, 1.6vw, 1rem);
-  line-height: 1.6;
+  font-family: var(--f-body);
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0;
 }
 
 .contact-inner .cta {
@@ -765,7 +801,7 @@ body {
   }
 
   .title-inner h1 {
-    font-size: clamp(2.4rem, 7vw, 4rem);
+    font-size: clamp(2.6rem, 6.8vw, 4.4rem);
   }
 
   .hero-identity {
@@ -824,7 +860,7 @@ body {
   }
 
   .hero-label {
-    font-size: 0.5rem;
+    font-size: 0.56rem;
   }
 
   .hero-label--tr,
@@ -908,7 +944,7 @@ body {
 
   .service-panel h3 {
     margin: 10px 0 6px;
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
   .service-panel p {
@@ -935,11 +971,11 @@ body {
   }
 
   .card-title {
-    font-size: 1rem;
+    font-size: 1.15rem;
   }
 
   .title-inner h1 {
-    font-size: clamp(2.1rem, 11vw, 3.4rem);
+    font-size: clamp(2.5rem, 12vw, 3.8rem);
   }
 
   .hero-actions {
