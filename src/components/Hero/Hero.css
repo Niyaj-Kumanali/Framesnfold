@@ -5,9 +5,9 @@
 .hero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
   align-items: center;
-  gap: clamp(1.5rem, 4vw, 4rem);
+  gap: clamp(1.25rem, 3.5vw, 3.5rem);
   /* The pill floats over the hero, so the top padding clears its measured
      height. Only this section is viewport-fitted; the page scrolls below it. */
   min-height: 100svh;
@@ -84,8 +84,8 @@
   margin: 0;
   font-family: var(--f-display);
   font-weight: 900;
-  font-size: clamp(3.3rem, 8vw, 8rem);
-  line-height: 0.86;
+  font-size: clamp(3.2rem, 7.3vw, 7rem);
+  line-height: 0.88;
   letter-spacing: -0.01em;
 }
 
@@ -118,7 +118,7 @@
   margin: clamp(0.75rem, 2vh, 1.4rem) 0 0;
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
   line-height: 1.08;
 }
 
@@ -188,7 +188,7 @@
   position: relative;
   display: inline-block;
   padding: 0.85rem 1.35rem;
-  border-radius: 6px;
+  border-radius: 999px;
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;

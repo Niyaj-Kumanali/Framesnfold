@@ -5,6 +5,7 @@ import { usePointerFx } from '../../hooks/usePointerFx'
 import { useReelNav } from '../../hooks/useReelNav'
 import type { CSSVars } from '../../types'
 import Reel from './Reel'
+import Scene3D from './Scene3D'
 import Wordmark from './Wordmark'
 import { REELS } from './reels'
 import './Hero.css'
@@ -79,6 +80,8 @@ export default function Hero() {
       </div>
 
       <div className="stage">
+        <Scene3D active={current} paused={paused} />
+
         <div
           ref={deckRef}
           className="deck"
