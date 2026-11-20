@@ -6,6 +6,7 @@
   --paper: #f3ede6;
   --mute: #a89b94;
   --line: rgba(255, 90, 31, 0.2);
+  --bg-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.085'/%3E%3C/svg%3E");
   --f-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   --f-ui: 'Instrument Sans', 'DM Sans', system-ui, sans-serif;
   --f-body: 'DM Sans', system-ui, sans-serif;
@@ -44,6 +45,8 @@ body {
 }
 
 .stage {
+  --light-x: 72%;
+  --light-y: 34%;
   position: fixed;
   inset: 0;
   overflow: hidden;
@@ -51,9 +54,59 @@ body {
   perspective-origin: 50% 50%;
   transform-style: preserve-3d;
   background:
-    radial-gradient(circle at 72% 34%, rgba(142, 14, 42, 0.38) 0%, rgba(74, 8, 26, 0.16) 27%, transparent 58%),
-    radial-gradient(circle at 88% 82%, rgba(82, 8, 26, 0.22) 0%, transparent 46%),
-    linear-gradient(115deg, #0a0a0b 0%, #0c0c0e 52%, #111114 100%);
+    radial-gradient(
+      ellipse 70% 18% at 74% 40%,
+      rgba(255, 112, 56, 0.12) 0%,
+      rgba(170, 28, 46, 0.05) 44%,
+      transparent 74%
+    ),
+    radial-gradient(
+      ellipse 82% 70% at var(--light-x) var(--light-y),
+      rgba(156, 18, 46, 0.46) 0%,
+      rgba(94, 10, 30, 0.2) 34%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 58% 78% at 92% 84%,
+      rgba(96, 12, 30, 0.28) 0%,
+      rgba(52, 6, 18, 0.12) 44%,
+      transparent 74%
+    ),
+    radial-gradient(
+      ellipse 70% 58% at 6% 6%,
+      rgba(38, 28, 32, 0.26) 0%,
+      transparent 72%
+    ),
+    linear-gradient(118deg, #080809 0%, #0d0c0f 48%, #130e11 76%, #09090a 100%);
+}
+
+.stage::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: -8%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 174, 112, 0.18) 0%, rgba(232, 104, 60, 0.07) 38%, transparent 72%) 18% 20% / 230px 140px no-repeat,
+    radial-gradient(ellipse at center, rgba(220, 70, 86, 0.16) 0%, rgba(132, 18, 44, 0.06) 42%, transparent 74%) 84% 14% / 280px 160px no-repeat,
+    radial-gradient(ellipse at center, rgba(255, 134, 78, 0.14) 0%, rgba(180, 36, 52, 0.05) 40%, transparent 74%) 8% 74% / 260px 150px no-repeat,
+    radial-gradient(ellipse at center, rgba(190, 36, 68, 0.15) 0%, rgba(96, 8, 32, 0.05) 44%, transparent 74%) 66% 86% / 320px 180px no-repeat,
+    radial-gradient(ellipse at center, rgba(255, 184, 124, 0.12) 0%, rgba(190, 54, 40, 0.04) 40%, transparent 74%) 48% 8% / 180px 110px no-repeat;
+  opacity: 0.85;
+}
+
+.stage::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    var(--bg-grain),
+    radial-gradient(ellipse at 50% 46%, transparent 36%, rgba(0, 0, 0, 0.1) 66%, rgba(0, 0, 0, 0.34) 100%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.14) 0%, transparent 18%, transparent 84%, rgba(0, 0, 0, 0.18) 100%);
+  background-size: 180px 180px, 100% 100%, 100% 100%;
+  background-repeat: repeat, no-repeat, no-repeat;
 }
 
 .ambient {
@@ -64,10 +117,11 @@ body {
   width: min(96vw, 1000px);
   height: min(100vh, 900px);
   background: radial-gradient(
-    ellipse at 42% 34%,
-    rgba(180, 20, 52, 0.55) 0%,
-    rgba(104, 10, 34, 0.24) 38%,
-    transparent 70%
+    ellipse at 44% 34%,
+    rgba(210, 36, 62, 0.62) 0%,
+    rgba(130, 16, 42, 0.3) 30%,
+    rgba(74, 8, 24, 0.1) 52%,
+    transparent 74%
   );
   filter: blur(46px);
   pointer-events: none;
@@ -840,6 +894,16 @@ body {
 }
 
 @media (max-width: 700px) {
+  .stage {
+    --light-x: 50%;
+    --light-y: 56%;
+  }
+
+  .stage::before {
+    inset: -12%;
+    opacity: 0.72;
+  }
+
   .hero-grid {
     width: 100%;
     opacity: 0.6;
@@ -999,7 +1063,9 @@ body {
   .scroll-track,
   .progress-rail,
   .dust,
-  .ambient {
+  .ambient,
+  .stage::before,
+  .stage::after {
     display: none;
   }
 
