@@ -106,8 +106,8 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
   'work-heading': [
     { at: 0, y: 20, opacity: 0, blur: 6 },
     { at: 0.12, y: 0, opacity: 1, blur: 0 },
-    { at: 0.3, y: 0, opacity: 1 },
-    { at: 0.44, y: -16, opacity: 0, blur: 8 },
+    { at: 0.5, y: 0, opacity: 1 },
+    { at: 0.56, y: -16, opacity: 0, blur: 8 },
     { at: 1, y: -16, opacity: 0, blur: 8 },
   ],
   closeup: [
@@ -168,26 +168,25 @@ export function ringStops(): MotionStop[] {
   ]
 }
 
-export function cardStops(index: number, centerX: number): MotionStop[] {
+export function cardStops(index: number, centerX: number, centerY: number): MotionStop[] {
   const passStart = 0.105 + index * 0.045
   const arrive = passStart + 0.013
   const depart = arrive + 0.019
   const passEnd = depart + 0.013
   const settleStart = 0.377
   const settleEnd = 0.398 + index * 0.002
-  const depth = index * 18
 
   return [
-    { at: 0, x: -1400, y: 24, z: -700 - depth, scale: 0.92, opacity: 0, blur: 10 },
-    { at: passStart, x: -1400, y: 24, z: -400 - depth, scale: 0.92, opacity: 1, blur: 0 },
-    { at: arrive, x: centerX, y: 0, z: 0, scale: 1.08, opacity: 1, blur: 0 },
-    { at: depart, x: centerX, y: 0, z: 0, scale: 1.08, opacity: 1, blur: 0 },
-    { at: passEnd, x: 1400, y: -24, z: -400 - depth, scale: 0.92, opacity: 1, blur: 0 },
-    { at: settleStart, x: 1400, y: -24, z: -400 - depth, scale: 0.92, opacity: 1, blur: 0 },
+    { at: 0, x: -1400, y: centerY, z: 0, scale: 1, opacity: 0, blur: 10 },
+    { at: passStart, x: -1400, y: centerY, z: 0, scale: 1, opacity: 1, blur: 0 },
+    { at: arrive, x: centerX, y: centerY, z: 0, scale: 1.08, opacity: 1, blur: 0 },
+    { at: depart, x: centerX, y: centerY, z: 0, scale: 1.08, opacity: 1, blur: 0 },
+    { at: passEnd, x: 1400, y: centerY, z: 0, scale: 1, opacity: 1, blur: 0 },
+    { at: settleStart, x: 1400, y: centerY, z: 0, scale: 1, opacity: 1, blur: 0 },
     { at: settleEnd, x: 0, y: 0, z: 0, scale: 1, opacity: 1, blur: 0 },
     { at: 0.5, x: 0, y: 0, z: 0, scale: 1, opacity: 1, blur: 0 },
-    { at: 0.56, z: 300 + depth, y: -60, scale: 1.12, opacity: 0, blur: 10 },
-    { at: 1, z: 300 + depth, y: -60, scale: 1.12, opacity: 0, blur: 10 },
+    { at: 0.56, z: 300 + index * 18, y: -60, scale: 1.12, opacity: 0, blur: 10 },
+    { at: 1, z: 300 + index * 18, y: -60, scale: 1.12, opacity: 0, blur: 10 },
   ]
 }
 

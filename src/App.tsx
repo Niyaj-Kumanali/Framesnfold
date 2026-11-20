@@ -8,9 +8,25 @@ import { LAYER_STOPS, cardStops, ringStops, sampleLayer, serviceStops } from './
 import type { MotionStop } from './motion'
 import './App.css'
 
-function stopsFor(key: string, centerX = 0): MotionStop[] | undefined {
+type CardOffset = { x: number; y: number }
+
+function layoutCenter(element: HTMLElement) {
+  let left = 0
+  let top = 0
+  let node: HTMLElement | null = element
+
+  while (node) {
+    left += node.offsetLeft
+    top += node.offsetTop
+    node = node.offsetParent as HTMLElement | null
+  }
+
+  return { x: left + element.offsetWidth / 2, y: top + element.offsetHeight / 2 }
+}
+
+function stopsFor(key: string, centerX = 0, centerY = 0): MotionStop[] | undefined {
   if (key === 'work-ring') return ringStops()
-  if (key.startsWith('card-')) return cardStops(Number(key.slice(5)), centerX)
+  if (key.startsWith('card-')) return cardStops(Number(key.slice(5)), centerX, centerY)
   if (key.startsWith('service-')) return serviceStops(Number(key.slice(8)))
   return LAYER_STOPS[key]
 }
@@ -24,22 +40,23 @@ export default function App() {
     if (!stage) return
 
     const layers = Array.from(stage.querySelectorAll<HTMLElement>('[data-layer]'))
-    const centerOffsets = new Map<string, number>()
+    const grid = document.querySelector<HTMLElement>('.work-grid')
+    const cardOffsets = new Map<string, CardOffset>()
 
-    const measureCenters = () => {
-      centerOffsets.clear()
+    const measureCardOffsets = () => {
+      cardOffsets.clear()
+      if (!grid) return
+
+      const gridCenter = layoutCenter(grid)
       for (const layer of layers) {
         const key = layer.dataset.layer ?? ''
         if (!key.startsWith('card-')) continue
 
-        let left = layer.offsetLeft
-        let parent = layer.offsetParent as HTMLElement | null
-        while (parent) {
-          left += parent.offsetLeft
-          parent = parent.offsetParent as HTMLElement | null
-        }
-
-        centerOffsets.set(key, window.innerWidth / 2 - (left + layer.offsetWidth / 2))
+        const cardCenter = layoutCenter(layer)
+        cardOffsets.set(key, {
+          x: gridCenter.x - cardCenter.x,
+          y: gridCenter.y - cardCenter.y,
+        })
       }
     }
 
@@ -49,7 +66,8 @@ export default function App() {
 
       for (const layer of layers) {
         const key = layer.dataset.layer ?? ''
-        const stops = stopsFor(key, centerOffsets.get(key) ?? 0)
+        const offset = cardOffsets.get(key)
+        const stops = stopsFor(key, offset?.x ?? 0, offset?.y ?? 0)
         if (!stops) continue
 
         const state = sampleLayer(stops, progress)
@@ -71,11 +89,11 @@ export default function App() {
     }
 
     const onResize = () => {
-      measureCenters()
+      measureCardOffsets()
       render()
     }
 
-    measureCenters()
+    measureCardOffsets()
     render()
     window.addEventListener('scroll', render, { passive: true })
     window.addEventListener('resize', onResize)
