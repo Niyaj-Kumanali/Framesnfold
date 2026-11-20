@@ -1,62 +1,72 @@
-.bar-top {
+/* Centred floating pill. It is fixed so the hero can own the full viewport;
+   useHeaderHeight still measures it for hero clearance and anchor offsets. */
+.nav-pill {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  left: 50%;
+  z-index: 20;
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between;
   align-items: center;
-  gap: 0.5rem 1.5rem;
-  padding-block: clamp(0.7rem, 1.8vh, 1.15rem);
+  gap: clamp(0.35rem, 1.2vw, 1.1rem);
+  width: max-content;
+  max-width: calc(100% - max(32px, env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px)));
+  padding: 0.4rem 0.5rem 0.4rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--glass);
+  box-shadow: 0 10px 34px -24px rgba(0, 0, 0, 0.9);
   font-size: 0.875rem;
-  border-bottom: 1px solid transparent;
-  background-color: transparent;
+  white-space: nowrap;
+  transform: translateX(-50%);
   transition:
     transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
     background-color 0.3s,
-    border-color 0.3s;
-  /* no fill mode: a finished animation would out-rank .is-hidden's transform */
-  animation: bar-in 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow 0.3s;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(130%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(130%);
+  animation: pill-in 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* `.app > *` sets position: relative; the bar has to stay sticky. */
-.app > .bar-top {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-
-@keyframes bar-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
+/* Solid fallback: no transparent text over an unblurred moving page. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav-pill {
+    background: var(--glass-solid);
   }
 }
 
-/* Only once something is scrolling underneath: backdrop, hairline. */
-.bar-top.is-stuck {
-  background-color: color-mix(in srgb, var(--ink) 88%, transparent);
-  -webkit-backdrop-filter: blur(14px) saturate(120%);
-  backdrop-filter: blur(14px) saturate(120%);
-  border-bottom-color: var(--line);
+@keyframes pill-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
 }
 
-.bar-top.is-hidden {
-  transform: translateY(-101%);
+.nav-pill.is-stuck {
+  background-color: rgba(14, 13, 12, 0.86);
+  box-shadow: 0 14px 40px -22px rgba(0, 0, 0, 0.95);
+}
+
+.nav-pill.is-hidden {
+  transform: translate(-50%, calc(-100% - 1.25rem));
 }
 
 /* ---- brand ---- */
 
 .brand {
   display: inline-flex;
+  flex: none;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
   color: var(--paper);
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* the mark: one 9:16 frame, hinged down the middle */
+/* One 9:16 frame, hinged down the middle. */
 .mark {
   display: inline-flex;
-  height: 1.3rem;
+  height: 1.2rem;
   aspect-ratio: 9 / 16;
   perspective: 40px;
 }
@@ -74,7 +84,6 @@
   transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* the panel opens as you reach for it */
 .brand:hover .panel.hinge,
 .brand:focus-visible .panel.hinge {
   transform: rotateY(-64deg);
@@ -83,37 +92,48 @@
 .brand-name {
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   line-height: 1;
   letter-spacing: 0.01em;
-  /* Big Shoulders sits high in its box; nudge it onto the mark's centre */
   padding-top: 0.12em;
 }
 
-/* ---- section links ---- */
+/* ---- links ---- */
 
 .section-nav {
   display: flex;
+  flex: none;
   align-items: center;
-  gap: clamp(0.75rem, 1.8vw, 1.6rem);
-  white-space: nowrap;
+  gap: clamp(0.75rem, 1.6vw, 1.4rem);
 }
 
 .section-nav a {
+  position: relative;
   color: var(--mute);
   text-decoration: none;
+  padding-block: 0.25rem;
   transition: color 0.2s;
 }
 
 .section-nav a:hover,
-.section-nav a:focus-visible {
+.section-nav a:focus-visible,
+.section-nav a.is-current {
   color: var(--paper);
 }
 
-/* Small, filled: the one ember thing in the bar at rest. */
+.section-nav a.is-current:not(.book-mini)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--ember);
+}
+
 .section-nav .book-mini {
-  padding: 0.4rem 0.7rem;
-  border-radius: 5px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
   background: var(--ember);
   color: var(--ink);
   font-size: 0.8125rem;
@@ -127,16 +147,28 @@
   color: var(--ink);
 }
 
-/* ---- accounts (shared icons live in AccountLinks.css) ---- */
-
-.bar-top .account-links {
+/* shared icon styles live in AccountLinks.css */
+.nav-pill .account-links {
   flex: none;
-  /* pull back by the icon button's own padding so the icon, not the box,
-     lines up with the app edge */
-  margin-right: -0.42rem;
+  gap: 0.05rem;
 }
 
-/* Phone: the three section links go, "Book a reel" and the icons stay. */
+.nav-pill .account-links a {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+.nav-pill .account-links .ico {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.nav-pill .badge {
+  right: 0.26rem;
+  bottom: 0.26rem;
+}
+
+/* Phones keep the mark, booking and accounts; section links drop away. */
 @media (max-width: 760px) {
   .section-nav a:not(.book-mini) {
     display: none;
@@ -144,17 +176,17 @@
 }
 
 @media (max-width: 600px) {
-  .bar-top {
-    gap: 0.4rem 0.6rem;
-    padding-block: 0.6rem;
+  .nav-pill {
+    gap: 0.3rem;
+    padding: 0.3rem 0.4rem 0.3rem 0.65rem;
   }
 
   .brand-name {
-    font-size: 1.05rem;
+    font-size: 1rem;
   }
 
   .mark {
-    height: 1.15rem;
+    height: 1.05rem;
   }
 
   .section-nav .book-mini {
@@ -162,36 +194,57 @@
     font-size: 0.75rem;
   }
 
-  .bar-top .account-links {
-    gap: 0.05rem;
-    margin-right: -0.36rem;
+  .nav-pill .account-links a {
+    width: 1.65rem;
+    height: 1.65rem;
   }
 
-  .bar-top .account-links a {
-    width: 1.85rem;
-    height: 1.85rem;
+  .nav-pill .account-links .ico {
+    width: 0.95rem;
+    height: 0.95rem;
   }
 
-  .bar-top .ico {
-    width: 1.05rem;
-    height: 1.05rem;
+  .nav-pill .badge {
+    right: 0.2rem;
+    bottom: 0.2rem;
+    width: 0.26rem;
+    height: 0.26rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav-pill {
+    gap: 0.22rem;
+    padding-inline: 0.5rem 0.3rem;
   }
 
-  .bar-top .badge {
-    right: 0.26rem;
-    bottom: 0.26rem;
+  .brand {
+    gap: 0.35rem;
+  }
+
+  .brand-name {
+    font-size: 0.9rem;
+  }
+
+  .section-nav .book-mini {
+    padding: 0.3rem 0.45rem;
+    font-size: 0.7rem;
+  }
+
+  .nav-pill .account-links a {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bar-top {
+  .nav-pill {
     animation: none;
     transition: none;
   }
 
-  /* no sliding: the bar simply stays put */
-  .bar-top.is-hidden {
-    transform: none;
+  .nav-pill.is-hidden {
+    transform: translateX(-50%);
   }
 
   .mark .panel.hinge,

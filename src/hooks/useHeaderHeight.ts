@@ -1,8 +1,8 @@
 import { useLayoutEffect, type RefObject } from 'react'
 
 /**
- * Publishes the bar's real height as `--bar-h` on `.app`. CSS uses it to pull
- * the 100svh hero under the sticky bar and to offset section anchors. Measured
+ * Publishes the floating pill's real height as `--bar-h` on `.app`. CSS uses it
+ * to clear the pill in the 100svh hero and to offset section anchors. Measured
  * rather than guessed because the padding and type sizes change with viewport.
  */
 export function useHeaderHeight(ref: RefObject<HTMLElement | null>) {

@@ -1,4 +1,4 @@
-/* Design tokens and page foundation. Single dark look by choice. */
+/* Design tokens and page foundation. One dark look by choice. */
 :root {
   --ink: #0e0d0c;
   --paper: #f2ede6;
@@ -6,6 +6,9 @@
   --ember-deep: #c9360a;
   --mute: #aaa299;
   --line: rgba(242, 237, 230, 0.14);
+  --glass: rgba(14, 13, 12, 0.72);
+  --glass-solid: #171513;
+  --glass-blur: 18px;
   --dwell: 3.8s;
   --f-display: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
   --f-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -45,44 +48,17 @@ body {
   color: var(--ink);
 }
 
-/* film grain, gently alive */
-body::after {
-  content: '';
-  position: fixed;
-  inset: -20%;
-  pointer-events: none;
-  opacity: 0.07;
-  z-index: 5;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  animation: grain 1.4s steps(4) infinite;
-}
-
-@keyframes grain {
-  0% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(-2%, 1%);
-  }
-  50% {
-    transform: translate(1%, -2%);
-  }
-  75% {
-    transform: translate(-1%, -1%);
-  }
-  100% {
-    transform: translate(2%, 2%);
-  }
-}
-
 a {
   color: inherit;
 }
 
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: 2px solid var(--ember);
-  outline-offset: 4px;
+  outline-offset: 3px;
 }
 
 .sr {
@@ -98,55 +74,14 @@ button:focus-visible {
   min-height: 100svh;
 }
 
-/* Normal flow: only the hero is viewport-fitted, the sections scroll below it. */
+/* Normal flow: the hero is one viewport, everything below scrolls past the
+   floating pill. --bar-h is the pill's measured height, published by
+   useHeaderHeight, and is used for hero clearance and anchor offsets. */
 .app {
+  --bar-h: 64px;
   position: relative;
   max-width: 1280px;
   margin-inline: auto;
-  /* No app-edge border: it reads as a hard vertical edge against the glow. */
-}
-
-/* The bar floats over the hero, so anchored sections need its real height as
-   clearance. --bar-h is measured by useHeaderHeight. */
-.section {
-  position: relative;
-  z-index: 1;
-  padding-block: clamp(3rem, 9vh, 6rem);
-  scroll-margin-top: var(--bar-h, 0px);
-}
-
-.section h2 {
-  margin: 0 0 1rem;
-  font-family: var(--f-display);
-  font-weight: 700;
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  line-height: 1;
-}
-
-/* soft cinema vignette, behind the content */
-.app::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: radial-gradient(ellipse at 50% 44%, transparent 52%, rgba(0, 0, 0, 0.55) 100%);
-}
-
-/* Orange light that follows the cursor. Fixed to the viewport, not the hero,
-   so it crosses the header and the side gutters without a hard edge; --mx/--my
-   are viewport pixels written by usePointerFx on this same element. */
-.app::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: radial-gradient(
-    560px circle at var(--mx, 68%) var(--my, 42%),
-    rgba(255, 90, 31, 0.16),
-    transparent 70%
-  );
 }
 
 .app > * {
@@ -154,8 +89,33 @@ button:focus-visible {
   z-index: 1;
 }
 
+.app > .bg-layer {
+  position: fixed;
+  z-index: 0;
+}
+
+.section {
+  position: relative;
+  z-index: 1;
+  padding-block: clamp(3.5rem, 9vh, 7rem);
+  scroll-margin-top: calc(var(--bar-h) + 2.75rem);
+}
+
+.section h2 {
+  margin: 0 0 1rem;
+  font-family: var(--f-display);
+  font-weight: 900;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  body::after {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

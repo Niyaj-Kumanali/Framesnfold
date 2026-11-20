@@ -1,29 +1,33 @@
 import { useRef } from 'react'
 import { bookLink } from '../../config'
-import AccountLinks from '../AccountLinks/AccountLinks'
+import { useActiveSection } from '../../hooks/useActiveSection'
 import { useHeaderHeight } from '../../hooks/useHeaderHeight'
 import { useHideOnScroll } from '../../hooks/useHideOnScroll'
+import AccountLinks from '../AccountLinks/AccountLinks'
 import './Header.css'
 
-/* Short label in the bar; the destination still follows the WhatsApp setting. */
+/* Short label in the pill; the destination still follows the WhatsApp setting. */
 const BOOKING = bookLink()
 
-/**
- * The bar: wordmark and folding panel mark on the left, section links and the
- * accounts on the right. It sticks, hides while scrolling down and returns on
- * the way up, so the hero keeps the same quiet first screen as before.
- */
-export default function Header() {
-  const barRef = useRef<HTMLElement>(null)
-  useHeaderHeight(barRef)
-  const { hidden, stuck } = useHideOnScroll()
+const NAV = [
+  { id: 'work', label: 'Work' },
+  { id: 'services', label: 'Services' },
+  { id: 'about', label: 'About' },
+] as const
 
-  const classes = ['bar-top']
+/** A centred glass pill: brand, section links, booking and the shared icons. */
+export default function Header() {
+  const pillRef = useRef<HTMLElement>(null)
+  useHeaderHeight(pillRef)
+  const { hidden, stuck } = useHideOnScroll()
+  const active = useActiveSection()
+
+  const classes = ['nav-pill']
   if (stuck) classes.push('is-stuck')
   if (hidden) classes.push('is-hidden')
 
   return (
-    <header ref={barRef} className={classes.join(' ')}>
+    <header ref={pillRef} className={classes.join(' ')}>
       <a className="brand" href="#top" aria-label="framesnfold, back to top">
         {/* A frame that folds: cream panel, ember panel, hinged down the middle. */}
         <span className="mark" aria-hidden="true">
@@ -34,15 +38,17 @@ export default function Header() {
       </a>
 
       <nav className="section-nav" aria-label="Sections">
-        <a href="#work">Work</a>
-        <a href="#services">Services</a>
-        <a href="#about">About</a>
-        <a
-          className="book-mini"
-          href={BOOKING.href}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        {NAV.map((item) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            className={active === item.id ? 'is-current' : undefined}
+            aria-current={active === item.id ? 'location' : undefined}
+          >
+            {item.label}
+          </a>
+        ))}
+        <a className="book-mini" href={BOOKING.href} target="_blank" rel="noopener noreferrer">
           Book a reel
         </a>
       </nav>

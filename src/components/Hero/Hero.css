@@ -8,12 +8,10 @@
   grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
   align-items: center;
   gap: clamp(1.5rem, 4vw, 4rem);
-  /* One viewport, pulled up under the sticky bar so the bar floats over it.
-     The matching top padding restores the exact content area the hero had when
-     it was the second row of a 100svh grid, so nothing clips at small sizes. */
+  /* The pill floats over the hero, so the top padding clears its measured
+     height. Only this section is viewport-fitted; the page scrolls below it. */
   min-height: 100svh;
-  margin-top: calc(-1 * var(--bar-h, 0px));
-  padding-top: calc(var(--bar-h, 0px) + clamp(0.5rem, 2.4vh, 2.5rem));
+  padding-top: calc(var(--bar-h, 64px) + clamp(0.75rem, 3vh, 2.5rem));
   padding-bottom: clamp(0.5rem, 2.4vh, 2.5rem);
 }
 
@@ -812,7 +810,7 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     gap: clamp(0.8rem, 2vh, 1.3rem);
-    padding-block: calc(var(--bar-h, 0px) + 0.25rem)
+    padding-block: calc(var(--bar-h, 64px) + 0.9rem)
       max(0.5rem, env(safe-area-inset-bottom, 0px));
   }
 
