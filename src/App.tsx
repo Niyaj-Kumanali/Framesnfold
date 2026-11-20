@@ -122,8 +122,10 @@ export default function App() {
 
         <section className="layer layer--work" data-layer="work" aria-labelledby="work-title">
           <div className="work-wrap">
-            <p className="kicker">02 / Portfolio</p>
-            <h2 className="work-title" id="work-title">Selected work</h2>
+            <div className="work-heading" data-layer="work-heading">
+              <p className="kicker">02 / Portfolio</p>
+              <h2 className="work-title" id="work-title">Selected work</h2>
+            </div>
             <div className="work-grid">
               {PROJECTS.map((project, index) => (
                 <a

@@ -93,11 +93,19 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
     { at: 1, x: 100, y: -40, z: -200, ry: 4, scale: 0.85, opacity: 0, blur: 10 },
   ],
   work: [
-    { at: 0, z: -220, y: 36, opacity: 0, blur: 8 },
-    { at: 0.12, z: 0, y: 0, opacity: 1, blur: 0 },
-    { at: 0.3, z: 0, y: 0, opacity: 1 },
-    { at: 0.44, z: 260, y: -40, opacity: 0, blur: 10 },
+    { at: 0, z: -520, y: 44, scale: 0.9, opacity: 0, blur: 10 },
+    { at: 0.12, z: 0, y: 0, scale: 1, opacity: 1, blur: 0 },
+    { at: 0.38, z: 0, y: 0, scale: 1, opacity: 1 },
+    { at: 0.48, z: 260, y: -40, opacity: 0, blur: 10 },
     { at: 1, z: 260, y: -40, opacity: 0, blur: 10 },
+  ],
+  'work-heading': [
+    { at: 0, y: 28, opacity: 0, blur: 8 },
+    { at: 0.18, y: 28, opacity: 0, blur: 8 },
+    { at: 0.25, y: 0, opacity: 1, blur: 0 },
+    { at: 0.38, y: 0, opacity: 1 },
+    { at: 0.48, y: -24, opacity: 0, blur: 8 },
+    { at: 1, y: -24, opacity: 0, blur: 8 },
   ],
   closeup: [
     { at: 0, z: -1200, x: 80, scale: 0.7, opacity: 0, blur: 16 },
@@ -124,13 +132,53 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
 }
 
 export function cardStops(index: number): MotionStop[] {
-  const stagger = index * 34
+  const width = typeof window === 'undefined' ? 1440 : window.innerWidth
+  const height = typeof window === 'undefined' ? 900 : window.innerHeight
+  const columns = width <= 700 ? 2 : 3
+  const rows = Math.ceil(6 / columns)
+  const column = index % columns
+  const row = Math.floor(index / columns)
+  const wrapWidth = Math.min(width * 0.92, width - 48, 1100)
+  const gap = Math.min(20, Math.max(10, width * 0.015))
+  const cardWidth = (wrapWidth - gap * (columns - 1)) / columns
+  const cardHeight = cardWidth * (9 / 16)
+  const baseX = (column - (columns - 1) / 2) * (cardWidth + gap)
+  const baseY = (row - (rows - 1) / 2) * (cardHeight + gap)
+  const angle = (-90 + index * 60) * (Math.PI / 180)
+  const radius = Math.min(width * 0.24, height * 0.3, 260)
+  const circleX = Math.cos(angle) * radius
+  const circleY = Math.sin(angle) * radius
+  const circleRz = index * 60 * 0.45
+  const toCircleX = circleX - baseX
+  const toCircleY = circleY - baseY
+
   return [
-    { at: 0, z: -1050 - stagger, y: 70 + index * 8, scale: 0.82, opacity: 0, blur: 12 },
-    { at: 0.12 + index * 0.004, z: -260 - stagger * 0.5, y: 0, scale: 1, opacity: 1, blur: 0 },
-    { at: 0.3, z: -stagger * 0.2, y: 0, scale: 1, opacity: 1 },
-    { at: 0.44, z: 300 + stagger, y: -60, scale: 1.12, opacity: 0, blur: 10 },
-    { at: 1, z: 300 + stagger, y: -60, scale: 1.12, opacity: 0, blur: 10 },
+    {
+      at: 0,
+      x: toCircleX * 1.25,
+      y: toCircleY * 1.25 - 90,
+      z: -1400 - index * 40,
+      rz: circleRz * 1.6,
+      scale: 0.55,
+      opacity: 0,
+      blur: 18,
+    },
+    {
+      at: 0.06 + index * 0.008,
+      x: toCircleX * 0.8,
+      y: toCircleY * 0.8 - 30,
+      z: -520 - index * 20,
+      rz: circleRz,
+      scale: 0.68,
+      opacity: 1,
+      blur: 6,
+    },
+    { at: 0.17, x: toCircleX, y: toCircleY, z: -40, rz: circleRz, scale: 0.86, opacity: 1, blur: 0 },
+    { at: 0.2, x: toCircleX, y: toCircleY, z: -40, rz: circleRz, scale: 0.86, opacity: 1 },
+    { at: 0.26, x: 0, y: 0, z: 0, rz: 0, scale: 1, opacity: 1 },
+    { at: 0.38, x: 0, y: 0, z: 0, scale: 1, opacity: 1 },
+    { at: 0.48, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
+    { at: 1, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
   ]
 }
 
