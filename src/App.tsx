@@ -8,9 +8,9 @@ import { LAYER_STOPS, cardStops, ringStops, sampleLayer, serviceStops } from './
 import type { MotionStop } from './motion'
 import './App.css'
 
-function stopsFor(key: string): MotionStop[] | undefined {
+function stopsFor(key: string, centerX = 0): MotionStop[] | undefined {
   if (key === 'work-ring') return ringStops()
-  if (key.startsWith('card-')) return cardStops(Number(key.slice(5)))
+  if (key.startsWith('card-')) return cardStops(Number(key.slice(5)), centerX)
   if (key.startsWith('service-')) return serviceStops(Number(key.slice(8)))
   return LAYER_STOPS[key]
 }
@@ -24,13 +24,32 @@ export default function App() {
     if (!stage) return
 
     const layers = Array.from(stage.querySelectorAll<HTMLElement>('[data-layer]'))
+    const centerOffsets = new Map<string, number>()
+
+    const measureCenters = () => {
+      centerOffsets.clear()
+      for (const layer of layers) {
+        const key = layer.dataset.layer ?? ''
+        if (!key.startsWith('card-')) continue
+
+        let left = layer.offsetLeft
+        let parent = layer.offsetParent as HTMLElement | null
+        while (parent) {
+          left += parent.offsetLeft
+          parent = parent.offsetParent as HTMLElement | null
+        }
+
+        centerOffsets.set(key, window.innerWidth / 2 - (left + layer.offsetWidth / 2))
+      }
+    }
 
     const render = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight
       const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
 
       for (const layer of layers) {
-        const stops = stopsFor(layer.dataset.layer ?? '')
+        const key = layer.dataset.layer ?? ''
+        const stops = stopsFor(key, centerOffsets.get(key) ?? 0)
         if (!stops) continue
 
         const state = sampleLayer(stops, progress)
@@ -51,13 +70,19 @@ export default function App() {
       if (rail) rail.style.transform = `scaleX(${progress.toFixed(4)})`
     }
 
+    const onResize = () => {
+      measureCenters()
+      render()
+    }
+
+    measureCenters()
     render()
     window.addEventListener('scroll', render, { passive: true })
-    window.addEventListener('resize', render)
+    window.addEventListener('resize', onResize)
 
     return () => {
       window.removeEventListener('scroll', render)
-      window.removeEventListener('resize', render)
+      window.removeEventListener('resize', onResize)
     }
   }, [])
 

@@ -99,8 +99,8 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
   work: [
     { at: 0, z: -220, y: 36, opacity: 0, blur: 8 },
     { at: 0.12, z: 0, y: 0, opacity: 1, blur: 0 },
-    { at: 0.3, z: 0, y: 0, opacity: 1 },
-    { at: 0.44, z: 260, y: -40, opacity: 0, blur: 10 },
+    { at: 0.5, z: 0, y: 0, opacity: 1 },
+    { at: 0.56, z: 260, y: -40, opacity: 0, blur: 10 },
     { at: 1, z: 260, y: -40, opacity: 0, blur: 10 },
   ],
   'work-heading': [
@@ -112,10 +112,11 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
   ],
   closeup: [
     { at: 0, z: -1200, x: 80, scale: 0.7, opacity: 0, blur: 16 },
-    { at: 0.34, z: -700, x: 60, scale: 0.8, opacity: 0, blur: 12 },
-    { at: 0.45, z: 0, x: 0, scale: 1, opacity: 1, blur: 0 },
-    { at: 0.56, z: 60, x: 0, scale: 1.04, opacity: 1 },
-    { at: 0.7, z: 460, x: -90, scale: 1.14, opacity: 0, blur: 14 },
+    { at: 0.44, z: -700, x: 60, scale: 0.8, opacity: 0, blur: 12 },
+    { at: 0.5, z: -700, x: 60, scale: 0.8, opacity: 0, blur: 12 },
+    { at: 0.56, z: 0, x: 0, scale: 1, opacity: 1, blur: 0 },
+    { at: 0.64, z: 60, x: 0, scale: 1.04, opacity: 1 },
+    { at: 0.72, z: 460, x: -90, scale: 1.14, opacity: 0, blur: 14 },
     { at: 1, z: 460, x: -90, scale: 1.14, opacity: 0, blur: 14 },
   ],
   services: [
@@ -167,14 +168,26 @@ export function ringStops(): MotionStop[] {
   ]
 }
 
-export function cardStops(index: number): MotionStop[] {
-  const stagger = index * 34
+export function cardStops(index: number, centerX: number): MotionStop[] {
+  const passStart = 0.105 + index * 0.045
+  const arrive = passStart + 0.013
+  const depart = arrive + 0.019
+  const passEnd = depart + 0.013
+  const settleStart = 0.377
+  const settleEnd = 0.398 + index * 0.002
+  const depth = index * 18
+
   return [
-    { at: 0, z: -1050 - stagger, y: 70 + index * 8, scale: 0.82, opacity: 0, blur: 12 },
-    { at: 0.12 + index * 0.004, z: -260 - stagger * 0.5, y: 0, scale: 1, opacity: 1, blur: 0 },
-    { at: 0.3, z: -stagger * 0.2, y: 0, scale: 1, opacity: 1 },
-    { at: 0.44, z: 300 + stagger, y: -60, scale: 1.12, opacity: 0, blur: 10 },
-    { at: 1, z: 300 + stagger, y: -60, scale: 1.12, opacity: 0, blur: 10 },
+    { at: 0, x: -1400, y: 24, z: -700 - depth, scale: 0.92, opacity: 0, blur: 10 },
+    { at: passStart, x: -1400, y: 24, z: -400 - depth, scale: 0.92, opacity: 1, blur: 0 },
+    { at: arrive, x: centerX, y: 0, z: 0, scale: 1.08, opacity: 1, blur: 0 },
+    { at: depart, x: centerX, y: 0, z: 0, scale: 1.08, opacity: 1, blur: 0 },
+    { at: passEnd, x: 1400, y: -24, z: -400 - depth, scale: 0.92, opacity: 1, blur: 0 },
+    { at: settleStart, x: 1400, y: -24, z: -400 - depth, scale: 0.92, opacity: 1, blur: 0 },
+    { at: settleEnd, x: 0, y: 0, z: 0, scale: 1, opacity: 1, blur: 0 },
+    { at: 0.5, x: 0, y: 0, z: 0, scale: 1, opacity: 1, blur: 0 },
+    { at: 0.56, z: 300 + depth, y: -60, scale: 1.12, opacity: 0, blur: 10 },
+    { at: 1, z: 300 + depth, y: -60, scale: 1.12, opacity: 0, blur: 10 },
   ]
 }
 
