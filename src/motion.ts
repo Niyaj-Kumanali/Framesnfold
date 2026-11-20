@@ -169,12 +169,12 @@ export function ringStops(): MotionStop[] {
 }
 
 export function cardStops(index: number, centerX: number, centerY: number): MotionStop[] {
-  const passStart = 0.105 + index * 0.045
-  const arrive = passStart + 0.013
-  const depart = arrive + 0.019
-  const passEnd = depart + 0.013
-  const settleStart = 0.377
-  const settleEnd = 0.398 + index * 0.002
+  const passStart = 0.08 + index * 0.06
+  const arrive = passStart + 0.017
+  const depart = arrive + 0.026
+  const passEnd = depart + 0.017
+  const settleStart = 0.44
+  const settleEnd = 0.46 + index * 0.002
 
   return [
     { at: 0, x: -1400, y: centerY, z: 0, scale: 1, opacity: 0, blur: 10 },

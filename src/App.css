@@ -39,8 +39,8 @@ body {
 }
 
 .scroll-track {
-  height: 700vh;
-  height: 700svh;
+  height: 1000vh;
+  height: 1000svh;
   pointer-events: none;
 }
 
