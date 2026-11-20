@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#0a0a0b" />
+  <rect x="6" y="6" width="52" height="52" fill="none" stroke="#ff5a1f" stroke-width="2" />
+  <text
+    x="32"
+    y="40"
+    text-anchor="middle"
+    font-family="Arial Narrow, Arial, sans-serif"
+    font-size="22"
+    font-weight="700"
+    fill="#f3ede6"
+  >NK</text>
+  <path d="M8 56 L56 8" stroke="#ff5a1f" stroke-width="3" />
+</svg>

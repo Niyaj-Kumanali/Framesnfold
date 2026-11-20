@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import type { CSSProperties } from 'react'
+import Cursor from './components/Cursor'
 import Dust from './components/Dust'
 import Icon from './components/Icon'
 import Monogram from './components/Monogram'
@@ -24,6 +25,17 @@ function layoutCenter(element: HTMLElement) {
   return { x: left + element.offsetWidth / 2, y: top + element.offsetHeight / 2 }
 }
 
+function faviconSvg(angle: number) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <rect width="64" height="64" fill="#0a0a0b" />
+    <rect x="6" y="6" width="52" height="52" fill="none" stroke="#ff5a1f" stroke-width="2" />
+    <text x="32" y="40" text-anchor="middle" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700" fill="#f3ede6">NK</text>
+    <g transform="rotate(${angle.toFixed(1)} 32 32)">
+      <path d="M8 56 L56 8" stroke="#ff5a1f" stroke-width="3" />
+    </g>
+  </svg>`
+}
+
 function stopsFor(key: string, centerX = 0, centerY = 0): MotionStop[] | undefined {
   if (key === 'work-ring') return ringStops()
   if (key.startsWith('card-')) return cardStops(Number(key.slice(5)), centerX, centerY)
@@ -38,6 +50,24 @@ export default function App() {
     const stage = document.querySelector<HTMLElement>('.stage')
     const rail = document.querySelector<HTMLElement>('.progress-fill')
     if (!stage) return
+
+    const root = document.documentElement
+    let favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
+    if (!favicon) {
+      favicon = document.createElement('link')
+      favicon.rel = 'icon'
+      favicon.type = 'image/svg+xml'
+      document.head.appendChild(favicon)
+    }
+
+    const faviconSteps = 16
+    let lastFaviconStep = -1
+    const updateFavicon = (progress: number) => {
+      const step = Math.round(progress * faviconSteps)
+      if (step === lastFaviconStep) return
+      lastFaviconStep = step
+      favicon.href = `data:image/svg+xml,${encodeURIComponent(faviconSvg((step / faviconSteps) * 180))}`
+    }
 
     const layers = Array.from(stage.querySelectorAll<HTMLElement>('[data-layer]'))
     const grid = document.querySelector<HTMLElement>('.work-grid')
@@ -63,6 +93,10 @@ export default function App() {
     const render = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight
       const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+
+      root.style.setProperty('--mark-rotation', `${(progress * 24).toFixed(2)}deg`)
+      root.style.setProperty('--mark-scale', (1 + progress * 0.06).toFixed(3))
+      updateFavicon(progress)
 
       for (const layer of layers) {
         const key = layer.dataset.layer ?? ''
@@ -101,11 +135,15 @@ export default function App() {
     return () => {
       window.removeEventListener('scroll', render)
       window.removeEventListener('resize', onResize)
+      root.style.removeProperty('--mark-rotation')
+      root.style.removeProperty('--mark-scale')
+      favicon.href = '/favicon.svg'
     }
   }, [])
 
   return (
     <div className="app">
+      <Cursor />
       <div className="scroll-track" aria-hidden="true" />
 
       <div className="stage">

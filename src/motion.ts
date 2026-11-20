@@ -98,14 +98,16 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
   ],
   work: [
     { at: 0, z: -220, y: 36, opacity: 0, blur: 8 },
-    { at: 0.12, z: 0, y: 0, opacity: 1, blur: 0 },
+    { at: 0.14, z: -220, y: 36, opacity: 0, blur: 8 },
+    { at: 0.18, z: 0, y: 0, opacity: 1, blur: 0 },
     { at: 0.5, z: 0, y: 0, opacity: 1 },
     { at: 0.56, z: 260, y: -40, opacity: 0, blur: 10 },
     { at: 1, z: 260, y: -40, opacity: 0, blur: 10 },
   ],
   'work-heading': [
     { at: 0, y: 20, opacity: 0, blur: 6 },
-    { at: 0.12, y: 0, opacity: 1, blur: 0 },
+    { at: 0.14, y: 20, opacity: 0, blur: 6 },
+    { at: 0.18, y: 0, opacity: 1, blur: 0 },
     { at: 0.5, y: 0, opacity: 1 },
     { at: 0.56, y: -16, opacity: 0, blur: 8 },
     { at: 1, y: -16, opacity: 0, blur: 8 },
@@ -169,12 +171,12 @@ export function ringStops(): MotionStop[] {
 }
 
 export function cardStops(index: number, centerX: number, centerY: number): MotionStop[] {
-  const passStart = 0.08 + index * 0.06
-  const arrive = passStart + 0.017
-  const depart = arrive + 0.026
-  const passEnd = depart + 0.017
-  const settleStart = 0.44
-  const settleEnd = 0.46 + index * 0.002
+  const passStart = 0.18 + index * 0.044
+  const arrive = passStart + 0.01
+  const depart = arrive + 0.024
+  const passEnd = depart + 0.01
+  const settleStart = 0.444
+  const settleEnd = 0.462 + index * 0.002
 
   return [
     { at: 0, x: -1400, y: centerY, z: 0, scale: 1, opacity: 0, blur: 10 },

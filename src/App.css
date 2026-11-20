@@ -39,8 +39,8 @@ body {
 }
 
 .scroll-track {
-  height: 1000vh;
-  height: 1000svh;
+  height: 1700vh;
+  height: 1700svh;
   pointer-events: none;
 }
 
@@ -151,6 +151,14 @@ body {
 
 .layer > * {
   pointer-events: auto;
+}
+
+.hero-mini-mark,
+.closeup-mark,
+.contact-mark {
+  transform: rotate(var(--mark-rotation, 0deg)) scale(var(--mark-scale, 1));
+  transform-origin: center;
+  will-change: transform;
 }
 
 .kicker {
@@ -805,6 +813,91 @@ body {
   margin-top: clamp(22px, 4vh, 40px);
 }
 
+.cursor {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 10px rgba(255, 90, 31, 0.8);
+  transition: opacity 180ms ease, width 180ms ease, height 180ms ease;
+}
+
+.cursor-ring {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 90, 31, 0.55);
+  border-radius: 50%;
+  transition: opacity 180ms ease, width 220ms ease, height 220ms ease, border-color 220ms ease, background 220ms ease;
+}
+
+.cursor-label {
+  color: var(--paper);
+  font-family: var(--f-ui);
+  font-size: 0.54rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.cursor[data-visible='true'] .cursor-dot {
+  opacity: 1;
+}
+
+.cursor[data-visible='true'][data-state='link'] .cursor-ring,
+.cursor[data-visible='true'][data-state='view'] .cursor-ring {
+  opacity: 1;
+}
+
+.cursor[data-state='link'] .cursor-ring {
+  width: 34px;
+  height: 34px;
+  border-color: var(--ember);
+}
+
+.cursor[data-state='view'] .cursor-dot {
+  width: 4px;
+  height: 4px;
+  opacity: 0;
+}
+
+.cursor[data-state='view'] .cursor-ring {
+  width: 78px;
+  height: 78px;
+  border-color: var(--ember);
+  background: rgba(255, 90, 31, 0.08);
+}
+
+.cursor[data-state='view'] .cursor-label {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.has-custom-cursor,
+  body.has-custom-cursor a,
+  body.has-custom-cursor button {
+    cursor: none;
+  }
+}
+
 .progress-rail {
   position: fixed;
   z-index: 8;
@@ -1091,6 +1184,12 @@ body {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
+  }
+
+  .hero-mini-mark,
+  .closeup-mark,
+  .contact-mark {
+    transform: none;
   }
 
   .hero-grid,
