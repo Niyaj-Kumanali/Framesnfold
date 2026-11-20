@@ -95,15 +95,15 @@ export const LAYER_STOPS: Record<string, MotionStop[]> = {
   work: [
     { at: 0, z: -520, y: 44, scale: 0.9, opacity: 0, blur: 10 },
     { at: 0.12, z: 0, y: 0, scale: 1, opacity: 1, blur: 0 },
-    { at: 0.38, z: 0, y: 0, scale: 1, opacity: 1 },
+    { at: 0.42, z: 0, y: 0, scale: 1, opacity: 1 },
     { at: 0.48, z: 260, y: -40, opacity: 0, blur: 10 },
     { at: 1, z: 260, y: -40, opacity: 0, blur: 10 },
   ],
   'work-heading': [
     { at: 0, y: 28, opacity: 0, blur: 8 },
-    { at: 0.18, y: 28, opacity: 0, blur: 8 },
-    { at: 0.25, y: 0, opacity: 1, blur: 0 },
-    { at: 0.38, y: 0, opacity: 1 },
+    { at: 0.3, y: 28, opacity: 0, blur: 8 },
+    { at: 0.36, y: 0, opacity: 1, blur: 0 },
+    { at: 0.42, y: 0, opacity: 1 },
     { at: 0.48, y: -24, opacity: 0, blur: 8 },
     { at: 1, y: -24, opacity: 0, blur: 8 },
   ],
@@ -144,39 +144,87 @@ export function cardStops(index: number): MotionStop[] {
   const cardHeight = cardWidth * (9 / 16)
   const baseX = (column - (columns - 1) / 2) * (cardWidth + gap)
   const baseY = (row - (rows - 1) / 2) * (cardHeight + gap)
-  const angle = (-90 + index * 60) * (Math.PI / 180)
-  const radius = Math.min(width * 0.24, height * 0.3, 260)
-  const circleX = Math.cos(angle) * radius
-  const circleY = Math.sin(angle) * radius
-  const circleRz = index * 60 * 0.45
-  const toCircleX = circleX - baseX
-  const toCircleY = circleY - baseY
+  const stride = cardWidth + gap
+  const lineSpacing = Math.min(width * 0.16, stride * 0.62)
+  const lineScale = Math.min(1, lineSpacing / stride)
+  const lineOffX = -width * 0.95 + index * lineSpacing
+  const lineOnX = (index - 2.5) * lineSpacing
+  const tx = (targetX: number) => targetX - baseX
+  const ty = (targetY: number) => targetY - baseY
+  const radius = Math.min(width * 0.22, height * 0.32, 260)
+
+  const circle = (offsetDeg: number, centerX: number) => {
+    const degrees = index * 60 + offsetDeg
+    const radians = (degrees - 90) * (Math.PI / 180)
+    return {
+      x: centerX + Math.cos(radians) * radius,
+      y: Math.sin(radians) * radius * 0.48,
+      rz: degrees * 0.35,
+    }
+  }
+
+  const circleRight = circle(0, width * 0.22)
+  const circleLeft = circle(-60, -width * 0.05)
 
   return [
     {
       at: 0,
-      x: toCircleX * 1.25,
-      y: toCircleY * 1.25 - 90,
-      z: -1400 - index * 40,
-      rz: circleRz * 1.6,
-      scale: 0.55,
+      x: tx(0),
+      y: ty(0),
+      z: -1800 - index * 50,
+      scale: 0.38,
       opacity: 0,
-      blur: 18,
+      blur: 22,
     },
     {
-      at: 0.06 + index * 0.008,
-      x: toCircleX * 0.8,
-      y: toCircleY * 0.8 - 30,
-      z: -520 - index * 20,
-      rz: circleRz,
-      scale: 0.68,
-      opacity: 1,
-      blur: 6,
+      at: 0.08,
+      x: tx((index - 2.5) * 18),
+      y: ty(0),
+      z: -950 - index * 30,
+      scale: 0.45,
+      opacity: 0.25,
+      blur: 14,
     },
-    { at: 0.17, x: toCircleX, y: toCircleY, z: -40, rz: circleRz, scale: 0.86, opacity: 1, blur: 0 },
-    { at: 0.2, x: toCircleX, y: toCircleY, z: -40, rz: circleRz, scale: 0.86, opacity: 1 },
-    { at: 0.26, x: 0, y: 0, z: 0, rz: 0, scale: 1, opacity: 1 },
-    { at: 0.38, x: 0, y: 0, z: 0, scale: 1, opacity: 1 },
+    {
+      at: 0.14,
+      x: tx(lineOffX),
+      y: ty(0),
+      z: -320,
+      scale: lineScale * 0.9,
+      opacity: 1,
+      blur: 5,
+    },
+    {
+      at: 0.19,
+      x: tx(lineOnX),
+      y: ty(0),
+      z: -180,
+      scale: lineScale,
+      opacity: 1,
+      blur: 0,
+    },
+    {
+      at: 0.23,
+      x: tx(circleRight.x),
+      y: ty(circleRight.y),
+      z: -60,
+      rx: 58,
+      rz: circleRight.rz,
+      scale: 0.8,
+      opacity: 1,
+    },
+    {
+      at: 0.29,
+      x: tx(circleLeft.x),
+      y: ty(circleLeft.y),
+      z: -60,
+      rx: 58,
+      rz: circleLeft.rz,
+      scale: 0.8,
+      opacity: 1,
+    },
+    { at: 0.35, x: 0, y: 0, z: 0, rx: 0, rz: 0, scale: 1, opacity: 1 },
+    { at: 0.42, x: 0, y: 0, z: 0, scale: 1, opacity: 1 },
     { at: 0.48, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
     { at: 1, x: 0, y: -46, z: 300 + index * 20, scale: 1.1, opacity: 0, blur: 10 },
   ]
